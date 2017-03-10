@@ -2,6 +2,8 @@
 /** For more info about namespaces plase @see http://php.net/manual/en/language.namespaces.importing.php */
 namespace Mini\Core;
 
+use Mini\Core\Session;
+
 class Application
 {
     /** @var null The controller */
@@ -19,6 +21,8 @@ class Application
      */
     public function __construct()
     {
+        Session::init();
+        
         // create array with URL parts in $url
         $this->splitUrl();
 
@@ -52,11 +56,11 @@ class Application
                     // no action defined: call the default index() method of a selected controller
                     $this->url_controller->index();
                 } else {
-                    header('location: ' . URL . 'error');
+                    header('location: ' . URL . 'error/error404');
                 }
             }
         } else {
-            header('location: ' . URL . 'error');
+            header('location: ' . URL . 'error/error404');
         }
     }
 
