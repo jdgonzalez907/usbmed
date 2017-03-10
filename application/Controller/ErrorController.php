@@ -23,7 +23,7 @@ class ErrorController extends Controller
     public function error404()
     {
         // load views
-        View::render('error/error404');
+        View::render('error/error404', [], 'login');
     }
     /**
      * PAGE: index
@@ -32,6 +32,6 @@ class ErrorController extends Controller
     public function error403()
     {
         // load views
-        View::render('error/error403');
+        View::render('error/error403', [], 'login');
     }
 }

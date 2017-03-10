@@ -16,7 +16,7 @@ namespace Mini\Core;
 class View {
     
     /** @var string Título de la página*/
-    public static $titulo = "Universidad San Buenaventura de Medellín";
+    public static $titulo = "USB de Medellín";
     
     
     /**
@@ -31,9 +31,13 @@ class View {
         {
             extract($vars);
         }
-        require APP . 'View/_templates/'.$layout.'/header.php';
+        if ($layout)
+            require APP . 'View/_templates/'.$layout.'/header.php';
+        
         require APP . 'View/'.$view.'.php';
-        require APP . 'View/_templates/'.$layout.'/footer.php';
+        
+        if ($layout)
+            require APP . 'View/_templates/'.$layout.'/footer.php';
     }
     
     /**

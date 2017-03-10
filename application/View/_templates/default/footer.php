@@ -1,4 +1,5 @@
-            </div>            
+                </div>
+            </div>
         </div>
 
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

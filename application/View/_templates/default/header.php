@@ -45,8 +45,7 @@
                         <button type="submit" class="btn btn-default">Submit</button>
                     </form>-->
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#">Representante</a></li>
-                        <li><a href="#">Contácto</a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Contácto</a></li>
                         <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Cambiar clave</a></li>
                         <li><a href="<?= URL ?>home/cerrarSesion"><span class="glyphicon glyphicon-user"></span> Cerrar sesión</a></li>
                     </ul>
@@ -55,4 +54,13 @@
         </nav>
 
         <div class="container">
-            <div class="col-md-12 body">
+            <div class="col-sm-3">
+                <div class="menu-sidebar">
+                    <p class="text-center lead">Permisos</p>
+                    <ul class="nav nav-pills nav-stacked">
+                        <?php self::render('_menu', [], '') ?>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="content-sidebar">
