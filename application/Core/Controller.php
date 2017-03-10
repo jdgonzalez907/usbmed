@@ -9,6 +9,7 @@
 namespace Mini\Core;
 
 use Mini\Core\View;
+use Mini\Core\Session;
 
 /**
  * Description of Controller
@@ -19,11 +20,16 @@ class Controller {
     
     protected function verificarPermisos()
     {
-        if(false)
+        if ( !Session::isGuest() )
         {
-            
+            if ( Session::get('permisos') )
+            {
+                
+            }else{
+                View::redirect('error/error403');
+            }
         }else{
-            View::redirect('');
+            View::redirect('error/error403');
         }
     }
 }
