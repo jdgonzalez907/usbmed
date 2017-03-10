@@ -15,6 +15,9 @@ class Application
     /** @var array URL parameters */
     private $url_params = array();
 
+    /** @var string URL controller/action */
+    public static $url_id = null;
+
     /**
      * "Start" the application:
      * Analyze the URL elements and calls the according controller/method or the fallback
@@ -92,6 +95,8 @@ class Application
             //echo 'Controller: ' . $this->url_controller . '<br>';
             //echo 'Action: ' . $this->url_action . '<br>';
             //echo 'Parameters: ' . print_r($this->url_params, true) . '<br>';
+            
+            self::$url_id = $this->url_controller.'/'.$this->url_action;
         }
     }
 }

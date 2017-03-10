@@ -40,8 +40,8 @@ class View {
      * Función para redirijar dentro de la página
      * @param string $url Url a redireccionar
      */
-    public static function redirect($url)
+    public static function redirect($url, $absolute = false)
     {
-        header('location: ' . URL . $url);
+        header('location: ' . (($absolute) ? '' : URL) . $url);
     }
 }

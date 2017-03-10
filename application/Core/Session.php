@@ -20,12 +20,11 @@ class Session {
         if (!isset($_SESSION))
         {
             session_start();
-            if ( !isset($_SESSION["inicioSesion"]) )
+            if ( !isset($_SESSION["isGuest"]) )
             {
-                $_SESSION["inicioSesion"] = false;
+                self::set('isGuest', true);
             }
         }
-            
     }
 
     public static function set($key, $var) 
@@ -43,7 +42,7 @@ class Session {
     
     public static function isGuest()
     {
-        return self::get("inicioSesion");
+        return self::get("isGuest");
 
     }
     

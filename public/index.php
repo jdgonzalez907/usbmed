@@ -28,7 +28,7 @@ define('APP', ROOT . 'application' . DIRECTORY_SEPARATOR);
 require ROOT . 'vendor/autoload.php';
 
 // load application config (error reporting etc.)
-require APP . 'config/config.php';
+require APP . 'Config/config.php';
 
 // load application class
 use Mini\Core\Application;

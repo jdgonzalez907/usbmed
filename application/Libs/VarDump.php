@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace Mini\Core;
+namespace Mini\Libs;
 
 /**
  * Description of VarDump
@@ -17,7 +17,7 @@ class VarDump {
     
     public static function dump($var){
         echo "<pre>"; 
-        print_r($var, true);
+        var_dump($var);
     }
     
 }

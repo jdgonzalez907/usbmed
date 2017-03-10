@@ -18,18 +18,27 @@ use Mini\Core\Session;
  */
 class Controller {
     
+    public $loginUrl = 'home/inciarSesion';
+    
     protected function verificarPermisos()
     {
-        if ( !Session::isGuest() )
+        if ( $this->verificarInicioSesion() )
         {
-            if ( Session::get('permisos') )
+            if (!in_array(Application::$url_id, Session::get('permisos')))
             {
-                
-            }else{
-                View::redirect('error/error403');
+                View::redirect('error/erorr403');
             }
-        }else{
-            View::redirect('error/error403');
         }
+      
+    }
+    
+    protected function verificarInicioSesion()
+    {
+        if ( Session::isGuest() )
+        {
+            View::redirect($this->loginUrl);
+        }
+        
+        return true;
     }
 }

@@ -8,9 +8,9 @@
         <title><?= self::$titulo; ?></title>
 
         <!-- Bootstrap -->
-        <link href="<?= URL ?>css/bootstrap.min.css" rel="stylesheet">
+        <link href="<?= URL ?>css/usbmed-tema.min.css" rel="stylesheet">
         <link href="<?= URL ?>css/sitio.css" rel="stylesheet">
-        
+
         <!-- Icono -->
         <link href="<?= URL ?>favicon.ico" rel="shortcut icon">
 
@@ -21,7 +21,7 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
-    <body>
+    <body class="body-login">
+        
         <div class="container">
             <div class="col-md-12">
-        

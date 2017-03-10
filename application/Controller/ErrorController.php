@@ -25,4 +25,13 @@ class ErrorController extends Controller
         // load views
         View::render('error/error404');
     }
+    /**
+     * PAGE: index
+     * This method handles the error page that will be shown when a page is not found
+     */
+    public function error403()
+    {
+        // load views
+        View::render('error/error403');
+    }
 }

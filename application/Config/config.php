@@ -53,9 +53,8 @@ define('URL', URL_PROTOCOL . URL_DOMAIN . URL_SUB_FOLDER);
  * Configuration for: Database
  * This is the place where you define your database credentials, database type etc.
  */
-define('DB_TYPE', 'mysql');
-define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'mini');
-define('DB_USER', 'root');
-define('DB_PASS', '12345678');
+define('DB_TYPE', 'oci');
+define('DB_NAME', '172.16.1.7:1521/sicpro');
+define('DB_USER', 'aca00');
+define('DB_PASS', 'rpj5asicb');
 define('DB_CHARSET', 'utf8');

@@ -13,6 +13,7 @@ namespace Mini\Controller;
 
 use Mini\Core\Controller;
 use Mini\Core\View;
+use Mini\Model\Usuario;
 
 class HomeController extends Controller
 {
@@ -22,6 +23,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $this->verificarPermisos();
         // load views
         View::render('home/index');
     }
@@ -46,5 +48,17 @@ class HomeController extends Controller
     {
         // load views
         View::render('home/example_two');
+    }
+    
+    public function cerrarSesion()
+    {
+        $model = new Usuario();
+        $model->cerrarSesion();
+        
+        if ( isset($_SERVER['HTTP_REFERER']) ){
+            View::redirect($_SERVER['HTTP_REFERER'], true);
+        }else{
+            View::redirect('home/index');
+        }
     }
 }
