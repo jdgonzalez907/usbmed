@@ -5,17 +5,14 @@
                 <legend class="text-center text-primary">Iniciar sesión</legend>
                 <img class="img-thumbnail img-responsive center-block" src="<?= URL ?>img/logo_usb.png"/>
                 <br>
-                <?php if (!is_null($error)): ?>
-                    <div class="alert alert-<?= $error['tipo'] ?>" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <?= $error['mensaje'] ?>
-                    </div>
+                <?php if (!is_null($alerta)): ?>
+                    <?= \Mini\Libs\Alerta::crear($alerta['tipo'], $alerta['mensaje']) ?>
                 <?php endif; ?>
                 <div class="form-group">
-                    <input type="text" class="form-control" id="txtIdentificacion" name="txtIdentificacion" placeholder="Ingrese su identificación" data-validation="server" data-validation-url="<?= URL ?>representante/validarIdentificacion">
+                    <input type="text" class="form-control" id="Usuario_CEDULA" name="Usuario[CEDULA]" placeholder="Ingrese su identificación" data-validation="required" value="<?= $model->getCedula() ?>">
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" id="txtClave" name="txtClave" placeholder="Ingrese su clave" data-validation="required">
+                    <input type="password" class="form-control" id="Usuario_CLAVE" name="Usuario[CLAVE]" placeholder="Ingrese su clave" data-validation="required">
                 </div>
                 <button type="submit" class="btn btn-primary">Entrar</button>
                 <a href="<?= URL ?>usuario/recordarClave" class="btn btn-link pull-right">¿Olvidó su clave?</a>

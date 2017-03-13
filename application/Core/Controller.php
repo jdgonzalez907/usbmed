@@ -26,7 +26,7 @@ class Controller {
         {
             if (!in_array(Application::$url_id, Session::get('permisos')))
             {
-                View::redirect('error/error403');
+                View::redirect('control/error403');
             }
         }
       

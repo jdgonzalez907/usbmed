@@ -1,3 +1,9 @@
+<?php 
+
+use Mini\Core\Session;
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -46,8 +52,8 @@
                     </form>-->
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Contácto</a></li>
-                        <li><a href="#"><span class="glyphicon glyphicon-lock"></span> Cambiar clave</a></li>
-                        <li><a href="<?= URL ?>home/cerrarSesion"><span class="glyphicon glyphicon-user"></span> Cerrar sesión</a></li>
+                        <li><a href="<?= URL ?>usuario/cambiarClave"><span class="glyphicon glyphicon-lock"></span> Cambiar clave</a></li>
+                        <li><a href="<?= URL ?>usuario/cerrarSesion"><span class="glyphicon glyphicon-user"></span> Cerrar sesión(<?= Session::get('usuario')['usuario'] ?>)</a></li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->

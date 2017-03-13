@@ -59,11 +59,11 @@ class Application
                     // no action defined: call the default index() method of a selected controller
                     $this->url_controller->index();
                 } else {
-                    header('location: ' . URL . 'error/error404');
+                    header('location: ' . URL . 'control/error404');
                 }
             }
         } else {
-            header('location: ' . URL . 'error/error404');
+            header('location: ' . URL . 'control/error404');
         }
     }
 

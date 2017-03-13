@@ -4,7 +4,7 @@
     <div class="col-sm-7 text-justify">
         <p>
             Bienvenido, usted se encuentra en el módulo de <strong>elección de representantes</strong>, en el cuál podrá realizar 
-            operacioens como la programación de fechas, la actualización de planchas, ver reportes, etc.
+            operaciones como la programación de fechas, la actualización de planchas, ver reportes, etc.
         </p>
         <hr>
         <p>

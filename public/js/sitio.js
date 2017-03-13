@@ -49,5 +49,4 @@ var myLanguage = {
 
 $.validate({
     language: myLanguage,
-    modules: 'security',
 });

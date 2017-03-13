@@ -5,5 +5,5 @@
         <p>Por favor contácte al administrador del sistema si cree que esto es un error.</p>
     </div>
     
-    <?php self::render('error/_contacto', [], '') ?>
+    <?php self::render('control/_contacto', [], '') ?>
 </div>

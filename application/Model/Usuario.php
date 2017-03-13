@@ -18,52 +18,98 @@ use Mini\Core\Session;
  */
 class Usuario extends Model {
 
-    public function getUsuario($cedula) {
-        $sql = "
-            select
-            * 
-            from 
-                COLILLA_EMPLEADO
-            inner join MU_PERSONA
-             on IDENTIFICACION = CEDULA
-            where CEDULA = :cedula and ESTADO = 'A'
-        ";
+    private $CEDULA;
+    private $CLAVE;
+    private $ACCESO;
+    private $FECHA_ACTUALIZA;
 
-        $query = $this->db->prepare($sql);
-        $parameters = array(':cedula' => $cedula);
-
-        $query->execute($parameters);
-
-        return $query->fetchAll();
+    public function getCEDULA() {
+        return $this->CEDULA;
     }
 
-    public function getUsuarioClave($cedula, $clave) {
-        $sql = "
-            select
-            * 
-            from 
-                COLILLA_EMPLEADO
-            inner join MU_PERSONA
-             on IDENTIFICACION = CEDULA
-            where CEDULA = :cedula and CLAVE = :clave and ESTADO = 'A'
-        ";
-
-        $query = $this->db->prepare($sql);
-        $parameters = [
-            ':cedula' => $cedula,
-            ':clave' => $clave
-        ];
-
-        $query->execute($parameters);
-
-        return $query->fetchAll();
+    public function getCLAVE() {
+        return $this->CLAVE;
     }
 
-    public function iniciarSesion($usuario, $cedula)
+    public function getFECHA_ACTUALIZA() {
+        return $this->FECHA_ACTUALIZA;
+    }
+
+    public function setCEDULA($CEDULA) {
+        $this->CEDULA = $CEDULA;
+    }
+
+    public function setCLAVE($CLAVE) {
+        $this->CLAVE = $CLAVE;
+    }
+
+    public function setACCESO($ACCESO) {
+        $this->ACCESO = $ACCESO;
+    }
+
+    public function setFECHA_ACTUALIZA($FECHA_ACTUALIZA) {
+        $this->FECHA_ACTUALIZA = $FECHA_ACTUALIZA;
+    }
+    
+    /**
+     * Consultar si existe información relacionada o no con la persona
+     * @return boolean
+     */
+    public function existeInfo(): bool
     {
-        if ($usuario){
-            Session::set('usuario', $usuario);
+        $sql = "select "
+                . "count(*) EXISTE "
+                . "from COLILLA_EMPLEADO usu "
+                . "inner join MU_PERSONA per on usu.CEDULA = per.IDENTIFICACION "
+                . "where usu.CEDULA = :cedula";
+        
+        $query = $this->db->prepare($sql);
+        $parametros = [':cedula' => $this->getCEDULA()];
+        
+        $query->execute($parametros);
+        
+        if ( (int)$query->fetch()->EXISTE > 0 )
+        {
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    /**
+     * Obtener información por usuario y clave
+     * @return array
+     */
+    public function getInfoPorClave(): array
+    {
+        $sql = "select "
+                . "per.* "
+                . "from COLILLA_EMPLEADO usu "
+                . "inner join MU_PERSONA per on usu.CEDULA = per.IDENTIFICACION "
+                . "where usu.CEDULA = :cedula and usu.CLAVE = :clave";
+        
+        $query = $this->db->prepare($sql);
+        $parametros = [':cedula' => $this->getCEDULA(), ':clave' => $this->getCLAVE()];
+        
+        $query->execute($parametros);
+        
+        return $query->fetchAll();
+    }
+
+    /**
+     * Iniciar la sesión, consultando la información relacionada y los permisos de acuerdo al(los) rol(es)
+     * @param array $info
+     * @return bool
+     */
+    public function iniciarSesion(array $info): bool
+    {
+        if ( !empty($info) )
+        {
+            $usuario['usuario'] = $this->getCEDULA();
+            $usuario['info'] = $info;
+            
             Session::set('isGuest', false);
+            Session::set('usuario', $usuario);
             
             $sql = "
                 select distinct ru.URL as PERMISO
@@ -79,7 +125,7 @@ class Usuario extends Model {
 
             $query = $this->db->prepare($sql);
             $parameters = [
-               ':cedula' => $cedula
+               ':cedula' => $this->getCEDULA()
             ];
 
             $query->execute($parameters);
@@ -94,13 +140,9 @@ class Usuario extends Model {
             Session::set('permisos', $permisos);
             
             return true;
+        }else{
+            return false;
         }
-        
-        return false;
     }
     
-    public function cerrarSesion()
-    {
-        Session::destroy();
-    }
 }
