@@ -99,11 +99,7 @@ class Programacion extends Model {
         $this->FECHA_ACTUALIZA = $FECHA_ACTUALIZA;
     }
 
-    /**
-     * Obtener la programación del presente año
-     * @return boolean
-     */
-    public function getProgramacionActual(): bool
+    public function getProgramacionActual()
     {
         $annio = date('Y');
 
@@ -144,11 +140,7 @@ class Programacion extends Model {
         }
     }
 
-    /**
-     * Insertar programación
-     * @return bool
-     */
-    public function insert(): bool
+    public function insert()
     {
         $sql = "insert into MU_REP_PROGRAMACION values ( "
                 . ":annio, "
@@ -174,17 +166,13 @@ class Programacion extends Model {
             ':usuario_actualiza' => $this->getUSUARIO_ACTUALIZA(),
             ':fecha_actualiza' => $this->getFECHA_ACTUALIZA()
         ];
-//        \Mini\Libs\VarDump::dump($query);exit;
+        
         $query->execute($parametros);
         
         return $query->rowCount();
     }
 
-    /**
-     * Actualizar programacion
-     * @return bool
-     */
-    public function update(): bool
+    public function update()
     {
         $sql = "update MU_REP_PROGRAMACION SET "
                 . "FECHA_INICIO_INSCRIPCION = TO_DATE(:fecha_inicio_inscripcion , 'YYYY/MM/DD HH24:MI:SS'), "

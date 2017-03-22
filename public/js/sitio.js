@@ -17,7 +17,7 @@ var myLanguage = {
     lengthBadEnd: ' caracteres',
     lengthTooLongStart: 'El valor no puede ser mayor a ',
     lengthTooShortStart: 'El valor no puede ser menor a ',
-    notConfirmed: 'Valores no confirmados',
+    notConfirmed: 'Los vaalores no son iguales',
     badDomain: 'Dominio incorrecto',
     badUrl: 'Url incorrecta',
     badCustomVal: 'Valor incorrecto',
@@ -47,6 +47,40 @@ var myLanguage = {
     imageRatioNotAccepted: 'Proporción de la imagen incorrecta'
 };
 
-$.validate({
-    language: myLanguage,
-});
+var myLanguageTable = {
+    'language': {
+        "decimal": "",
+        "emptyTable": "Sin datos para mostrar",
+        "info": "Mostrando _START_ de _END_, _TOTAL_ registro(s) en total",
+        "infoEmpty": "Mostrando 0 to 0, 0 registro(s) en total",
+        "infoFiltered": "(filtrado de _MAX_ registro(s))",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "Mostrando _MENU_ registro(s)",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "No se encontraron registros",
+        "paginate": {
+            "first": "Primero",
+            "last": "Último",
+            "next": "Siguiente",
+            "previous": "Anterior"
+        },
+        "aria": {
+            "sortAscending": ": activate to sort column ascending",
+            "sortDescending": ": activate to sort column descending"
+        }
+    }
+}
+
+$('#modal_usbmed').modal({
+    keyboard: false,
+    show: false,
+    backdrop : 'static'
+})
+
+$('#modal_usbmed').on('hide.bs.modal', function (event) {
+    $('#modal_usbmed_title').html('');
+    $('#modal_usbmed_body').html('');
+})

@@ -1,16 +1,19 @@
 <?php
+
 /** For more info about namespaces plase @see http://php.net/manual/en/language.namespaces.importing.php */
+
 namespace Mini\Core;
 
 use Mini\Core\Session;
+use Mini\Core\View;
 
-class Application
-{
+class Application {
+
     /** @var null The controller */
-    private $url_controller = null;
+    private $url_controller = 'home';
 
     /** @var null The method (of the above controller), often also named "action" */
-    private $url_action = null;
+    private $url_action = 'index';
 
     /** @var array URL parameters */
     private $url_params = array();
@@ -22,10 +25,9 @@ class Application
      * "Start" the application:
      * Analyze the URL elements and calls the according controller/method or the fallback
      */
-    public function __construct()
-    {
+    public function __construct() {
         Session::init();
-        
+
         // create array with URL parts in $url
         $this->splitUrl();
 
@@ -34,10 +36,8 @@ class Application
 
             $page = new \Mini\Controller\HomeController();
             $page->index();
-
         } elseif (file_exists(APP . 'Controller/' . ucfirst($this->url_controller) . 'Controller.php')) {
             // here we did check for controller: does such a controller exist ?
-
             // if so, then load this file and create this controller
             // like \Mini\Controller\CarController
             $controller = "\\Mini\\Controller\\" . ucfirst($this->url_controller) . 'Controller';
@@ -51,27 +51,36 @@ class Application
                     call_user_func_array(array($this->url_controller, $this->url_action), $this->url_params);
                 } else {
                     // If no parameters are given, just call the method without parameters, like $this->home->method();
-                    $this->url_controller->{$this->url_action}();
+                    $reflection = new \ReflectionMethod($this->url_controller, $this->url_action);
+                    if ($reflection->getNumberOfRequiredParameters() === 0) {
+                        $this->url_controller->{$this->url_action}();
+                    } else {
+                        $errorHandler = new \Mini\Controller\ControlController;
+                        $errorHandler->error400();
+                        exit();
+                    }
                 }
-
             } else {
                 if (strlen($this->url_action) == 0) {
                     // no action defined: call the default index() method of a selected controller
                     $this->url_controller->index();
                 } else {
-                    header('location: ' . URL . 'control/error404');
+                    $errorHandler = new \Mini\Controller\ControlController;
+                    $errorHandler->error404();
+                    exit();
                 }
             }
         } else {
-            header('location: ' . URL . 'control/error404');
+            $errorHandler = new \Mini\Controller\ControlController;
+            $errorHandler->error404();
+            exit();
         }
     }
 
     /**
      * Get and split the URL
      */
-    private function splitUrl()
-    {
+    private function splitUrl() {
         if (isset($_GET['url'])) {
 
             // split URL
@@ -82,8 +91,8 @@ class Application
             // Put URL parts into according properties
             // By the way, the syntax here is just a short form of if/else, called "Ternary Operators"
             // @see http://davidwalsh.name/php-shorthand-if-else-ternary-operators
-            $this->url_controller = isset($url[0]) ? $url[0] : null;
-            $this->url_action = isset($url[1]) ? $url[1] : null;
+            $this->url_controller = isset($url[0]) ? $url[0] : $this->url_controller;
+            $this->url_action = isset($url[1]) ? $url[1] : $this->url_action;
 
             // Remove controller and action from the split URL
             unset($url[0], $url[1]);
@@ -95,8 +104,9 @@ class Application
             //echo 'Controller: ' . $this->url_controller . '<br>';
             //echo 'Action: ' . $this->url_action . '<br>';
             //echo 'Parameters: ' . print_r($this->url_params, true) . '<br>';
-            
-            self::$url_id = $this->url_controller.'/'.$this->url_action;
         }
+
+        self::$url_id = $this->url_controller . '/' . $this->url_action;
     }
+
 }

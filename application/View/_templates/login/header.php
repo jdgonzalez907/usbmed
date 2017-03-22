@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,7 +21,8 @@
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
     </head>
-    <body class="body-login">
+    <body>
         
         <div class="container">
-            <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">

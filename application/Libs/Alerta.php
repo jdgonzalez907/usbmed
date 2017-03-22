@@ -21,23 +21,23 @@ class Alerta {
      * @param string $mensaje
      * @return string
      */
-    public static function crear(string $tipo, string $mensaje): string
+    public static function crear($tipo, $mensaje)
     {
         $html = '<div class="alert alert-' . $tipo . '" role="alert">';
         $html .= '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
         $html .= '<strong>';
         switch ($tipo) {
             case 'info':
-                $html .= 'Información:';
+                $html .= '<span class="lead">Información:</span>';
                 break;
             case 'success':
-                $html .= 'Éxito:';
+                $html .= '<span class="lead">Éxito:</span>';
                 break;
             case 'warning':
-                $html .= 'Peligro:';
+                $html .= '<span class="lead">Peligro:</span>';
                 break;
             case 'danger':
-                $html .= 'Error:';
+                $html .= '<span class="lead">Error:</span>';
                 break;
             default:
                 break;

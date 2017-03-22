@@ -17,30 +17,44 @@ use Mini\Core\Session;
  * @author ingeniero.analista1
  */
 class Controller {
-    
-    public $loginUrl = 'home/inciarSesion';
-    
-    protected function verificarPermisos()
-    {
-        if ( $this->verificarInicioSesion() )
-        {
-            if (!in_array(Application::$url_id, Session::get('permisos')))
-            {
-                View::redirect('control/error403');
+
+    public $loginUrl = 'usuario/iniciarSesion';
+
+    protected function verificarPermisos($redirect = true) {
+        if ($this->verificarInicioSesion($redirect)) {
+            if (!array_key_exists(Application::$url_id, Session::get('permisos'))) {
+                if ($redirect) {
+                    $errorHandler = new \Mini\Controller\ControlController();
+                    $errorHandler->error403();
+                    exit();
+                }
+
+                return false;
+            } else {
+                return true;
             }
         }
-      
+        return false;
     }
-    
-    protected function verificarInicioSesion()
-    {
-        if ( Session::isGuest() )
-        {
-            View::redirect($this->loginUrl);
-            
+
+    protected function verificarInicioSesion($redirect = true) {
+        if (Session::isGuest()) {
+            if ($redirect) {
+                View::redirect($this->loginUrl);
+            }
+
             return false;
         }
-        
+
         return true;
     }
+
+    protected function isAjax($method = 'post') {
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

@@ -1,11 +1,5 @@
-<?php 
-
-use Mini\Core\Session;
-
-?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,6 +10,8 @@ use Mini\Core\Session;
         <!-- Bootstrap -->
         <link href="<?= URL ?>css/usbmed-tema.min.css" rel="stylesheet">
         <link href="<?= URL ?>css/sitio.css" rel="stylesheet">
+
+        <link href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css" rel="stylesheet">
 
         <!-- Icono -->
         <link href="<?= URL ?>favicon.ico" rel="shortcut icon">
@@ -29,44 +25,19 @@ use Mini\Core\Session;
     </head>
     <body>
 
-        <nav class="navbar navbar-inverse">
-            <div class="container">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#"><?= self::$titulo ?></a>
-                </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <!--<form class="navbar-form navbar-left">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search">
-                        </div>
-                        <button type="submit" class="btn btn-default">Submit</button>
-                    </form>-->
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#"><span class="glyphicon glyphicon-envelope"></span> Contácto</a></li>
-                        <li><a href="<?= URL ?>usuario/cambiarClave"><span class="glyphicon glyphicon-lock"></span> Cambiar clave</a></li>
-                        <li><a href="<?= URL ?>usuario/cerrarSesion"><span class="glyphicon glyphicon-user"></span> Cerrar sesión(<?= Session::get('usuario')['usuario'] ?>)</a></li>
-                    </ul>
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container-fluid -->
-        </nav>
+        <?= self::render('_templates/_menuPrincipal', [], '') ?>
 
         <div class="container">
-            <div class="col-sm-3">
-                <div class="menu-sidebar">
-                    <p class="text-center lead">Permisos</p>
-                    <ul class="nav nav-pills nav-stacked">
-                        <?php self::render('_menu', [], '') ?>
-                    </ul>
+            <div class="row">
+                <div class="col-sm-3">
+                    <?php self::render('_templates/_menuPermisos', [], '') ?>
                 </div>
-            </div>
-            <div class="col-sm-9">
-                <div class="content-sidebar">
+                <div class="col-sm-9">
+                    <div class="content-sidebar">
+                        <?php if (isset($alerta)): ?>
+                            <?php if (!is_null($alerta)): ?>
+                                <?= \Mini\Libs\Alerta::crear($alerta['tipo'], $alerta['mensaje']) ?>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                
+

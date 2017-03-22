@@ -38,6 +38,8 @@ class Session {
         {
             return $_SESSION[$key];
         }
+        
+        return false;
     }
     
     public static function isGuest()

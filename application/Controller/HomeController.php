@@ -9,6 +9,7 @@
 namespace Mini\Controller;
 
 use Mini\Core\Controller;
+use Mini\Core\View;
 
 /**
  * Description of HomeController
@@ -19,7 +20,12 @@ class HomeController extends Controller{
     
     public function index()
     {
-        
+        $this->verificarInicioSesion();
+        View::render('home/index', [], 'menu_top');
     }
     
+    public function contacto()
+    {
+        
+    }
 }

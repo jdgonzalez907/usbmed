@@ -1,13 +1,8 @@
 <h1>Programación</h1>
 
-<?php if (!is_null($alerta)): ?>
-    <?= \Mini\Libs\Alerta::crear($alerta['tipo'], $alerta['mensaje']) ?>
-<?php endif; ?>
-
 <p>Por favor llenar el formulario con los respectivos campos.</p>
 
-<form class="form-horizontal" method="post">
-    <hr>
+<form class="form-horizontal" method="post" id="frmProgramacion">
     <div class="row">
         <div class="col-sm-6">
             <h3 class="text-center text-primary">Inscripciones</h3>
@@ -40,10 +35,19 @@
             </div>
         </div>
     </div>
-    <hr>
     <div class="form-group">
-        <div class="col-md-12">
-            <button type="submit" class="btn btn-primary" id="btnGuardar" name="btnGuardar">Guardar</button>
+        <div class="col-md-12 text-center">
+            <button type="submit" class="btn btn-primary" id="btnGuardar" name="btnGuardar"><span class="glyphicon glyphicon-save"></span> Guardar</button>
         </div>
     </div>
 </form>
+
+<?php 
+self::registerJs("
+    
+    $.validate({
+        language: myLanguage,
+        form: '#frmProgramacion'
+    });
+") 
+?>

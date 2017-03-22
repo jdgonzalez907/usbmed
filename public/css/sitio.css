@@ -15,35 +15,81 @@ body {
 .login{
     margin-top: 20px;
     margin-bottom: 20px;
-    padding: 20px;
+    padding: 15px;
     border: 1px solid #ddd;
     background-color: #fff;
+    border-radius: 5px;
 }
 
 .body {
     /*margin-top: 50px;*/
+    margin-right: 15px;
     margin-bottom: 20px;
-    padding: 20px;
+    padding: 15px;
     border: 1px solid #ddd;
     background-color: #fff;
+    border-radius: 5px;
 }
 
 .menu-sidebar {
-    margin-left: -15px;
+    margin-left: 0px;
     margin-bottom: 20px;
-    padding: 20px;
+    padding: 15px;
     border: 1px solid #ddd;
     background-color: #fff;
+    border-radius: 5px;
 }
 
 .content-sidebar {
-    margin-right: -15px;
+    margin-right: 15px;
     margin-bottom: 20px;
-    padding: 20px;
+    padding: 15px;
     border: 1px solid #ddd;
     background-color: #fff;
+    border-radius: 5px;
 }
 
 .error-controller {
     margin-top: 50px;
+}
+
+#previewFoto {
+    height: 200px;
+    width: 200px;
+}
+
+.form-control {
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    -webkit-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+}
+
+.modal-content {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.navbar {
+    border-radius: 0px;
+}
+
+table.dataTable {
+    border-radius: 5px;
+}
+
+.form-control:focus {
+    border-color: none;
+    box-shadow: none;
+}
+
+.tab-content{
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0px 0px 5px 5px;
+}
+
+.tab-content > .tab-pane {
+    padding: 10px;
 }

@@ -18,6 +18,8 @@ class View {
     /** @var string Título de la página*/
     public static $titulo = "USB de Medellín";
     
+    private static $js = null;
+    
     
     /**
      * Función para renderizar las vistas en los controladores
@@ -47,5 +49,15 @@ class View {
     public static function redirect($url, $absolute = false)
     {
         header('location: ' . (($absolute) ? '' : URL) . $url);
+    }
+    
+    public static function registerJs($js)
+    {
+        self::$js = $js;
+    }
+    
+    public static function getJs()
+    {
+        return self::$js;
     }
 }

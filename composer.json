@@ -14,12 +14,11 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
-    "autoload":
-    {
-        "psr-4":
-        {
-            "Mini\\" : "application/"
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Mini\\": "application/"
         }
     }
 }

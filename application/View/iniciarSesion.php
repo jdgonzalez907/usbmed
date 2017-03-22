@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-4 col-md-offset-4">
         <div class="login">
-            <form method="post">
+            <form method="post" id="frmIniciarSesion">
                 <legend class="text-center text-primary">Iniciar sesión</legend>
                 <img class="img-thumbnail img-responsive center-block" src="<?= URL ?>img/logo_usb.png"/>
                 <br>
@@ -14,8 +14,8 @@
                 <div class="form-group">
                     <input type="password" class="form-control" id="Usuario_CLAVE" name="Usuario[CLAVE]" placeholder="Ingrese su clave" data-validation="required">
                 </div>
-                <button type="submit" class="btn btn-primary">Entrar</button>
-                <a href="<?= URL ?>usuario/recordarClave" class="btn btn-link pull-right">¿Olvidó su clave?</a>
+                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-log-in"></span> Entrar</button>
+                <a href="<?= URL ?>usuario/recordarClave" class="btn btn-default pull-right"><span class="glyphicon glyphicon-question-sign"></span> ¿Olvidó su clave?</a>
                 <p class="text-justify">
                     <br>
                     <strong>Nota:</strong>
@@ -29,3 +29,14 @@
         </div>
     </div>
 </div>
+
+<?php
+
+self::registerJs("
+    $.validate({
+        language: myLanguage,
+        form: '#frmIniciarSesion'
+    });
+")
+
+?>

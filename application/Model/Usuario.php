@@ -51,11 +51,7 @@ class Usuario extends Model {
         $this->FECHA_ACTUALIZA = $FECHA_ACTUALIZA;
     }
     
-    /**
-     * Consultar si existe información relacionada o no con la persona
-     * @return boolean
-     */
-    public function existeInfo(): bool
+    public function existeInfo()
     {
         $sql = "select "
                 . "count(*) EXISTE "
@@ -76,11 +72,7 @@ class Usuario extends Model {
         }
     }
     
-    /**
-     * Obtener información por usuario y clave
-     * @return array
-     */
-    public function getInfoPorClave(): array
+    public function getInfoPorClave()
     {
         $sql = "select "
                 . "per.* "
@@ -95,13 +87,46 @@ class Usuario extends Model {
         
         return $query->fetchAll();
     }
+    
+    public function getInfoPorFecha()
+    {
+        $sql = "select "
+                . "usu.CLAVE, "
+                . "per.* "
+                . "from COLILLA_EMPLEADO usu "
+                . "inner join MU_PERSONA per on usu.CEDULA = per.IDENTIFICACION "
+                . "where usu.CEDULA = :cedula and TO_CHAR(per.FECHA_NACIMIENTO, 'YYYY/MM/DD') = :clave";
+        
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':cedula' => $this->getCEDULA(), 
+            ':clave' => $this->getCLAVE()
+        ];
+        
+        $query->execute($parametros);
+        
+        return $query->fetchAll();
+    }
+    
+    public function getInfoPorCedula()
+    {
+        $sql = "select "
+                . "per.* "
+                . "from COLILLA_EMPLEADO usu "
+                . "inner join MU_PERSONA per on usu.CEDULA = per.IDENTIFICACION "
+                . "where usu.CEDULA = :cedula";
+        
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':cedula' => $this->getCEDULA()
+        ];
+        
+        $query->execute($parametros);
+        
+        return $query->fetchAll();
+    }
 
-    /**
-     * Iniciar la sesión, consultando la información relacionada y los permisos de acuerdo al(los) rol(es)
-     * @param array $info
-     * @return bool
-     */
-    public function iniciarSesion(array $info): bool
+    public function iniciarSesion($info, $cargarPermisos = true)
     {
         if ( !empty($info) )
         {
@@ -111,33 +136,48 @@ class Usuario extends Model {
             Session::set('isGuest', false);
             Session::set('usuario', $usuario);
             
-            $sql = "
-                select distinct ru.URL as PERMISO
-                from COLILLA_EMPLEADO p
-                inner join MU_ROL_PERSONA rp
-                on p.CEDULA = rp.CEDULA
-                inner join MU_ROL r
-                on r.ROL = rp.ROL
-                inner join MU_ROL_URL ru
-                on ru.ROL = r.ROL
-                where p.CEDULA = :cedula
-            ";
-
-            $query = $this->db->prepare($sql);
-            $parameters = [
-               ':cedula' => $this->getCEDULA()
-            ];
-
-            $query->execute($parameters);
-            
-            $permisos = [];
-            
-            foreach($query->fetchAll() as $permiso)
+            if ($cargarPermisos)
             {
-                $permisos[] = $permiso->PERMISO;
-            }
+                $sql = "
+                    select distinct
+                    u.*
+                    from COLILLA_EMPLEADO p
+                    inner join MU_ROL_PERSONA rp
+                    on p.CEDULA = rp.CEDULA
+                    inner join MU_ROL r
+                    on r.ROL = rp.ROL
+                    inner join MU_ROL_URL ru
+                    on ru.ROL = r.ROL
+                    inner join MU_URL u
+                    on u.URL = ru.URL
+                    where p.CEDULA = :cedula
+                    order by u.ORDEN
+                ";
 
-            Session::set('permisos', $permisos);
+                $query = $this->db->prepare($sql);
+                $parameters = [
+                   ':cedula' => $this->getCEDULA()
+                ];
+
+                $query->execute($parameters);
+
+                $permisos = [];
+                
+                $resultado = $query->fetchAll();
+
+                foreach($resultado as $permiso)
+                {
+                    $permisos[$permiso->URL] = [
+                        'URL' => $permiso->URL,
+                        'NOMBRE' => $permiso->NOMBRE,
+                        'TIPO' => $permiso->TIPO,
+                        'ICONO' => $permiso->ICONO,
+                        'ORDEN' => $permiso->ORDEN
+                    ];
+                }
+
+                Session::set('permisos', $permisos);
+            }
             
             return true;
         }else{
@@ -145,4 +185,51 @@ class Usuario extends Model {
         }
     }
     
+    public static function getMenuPrincipal()
+    {
+        $menuPrincipal = [];
+        
+        foreach (Session::get('permisos') as $url => $item) {
+            if ($item['TIPO'] === 'C')
+            {
+                $menuPrincipal[] = $item;
+            }
+        }
+        
+        return $menuPrincipal;
+    }
+    
+    public static function getMenuPermisos()
+    {
+        $menuPermisos = [];
+        
+        foreach (Session::get('permisos') as $url => $item) {
+            $controlador = explode('/', \Mini\Core\Application::$url_id)[0];
+
+            if (strpos($item['URL'], $controlador) === 0 && !is_null($item['ORDEN']))
+            {
+                $menuPermisos[] = $item;
+            }
+        }
+        
+        return $menuPermisos;
+    }
+    
+    public function cambiarClave()
+    {
+        $sql = "update COLILLA_EMPLEADO set "
+                . "CLAVE = :clave, "
+                . "FECHA_ACTUALIZA = sysdate "
+                . "where CEDULA = :cedula";
+        
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':cedula' => $this->getCEDULA(),
+            ':clave' => $this->getCLAVE()
+        ];
+        
+        $query->execute($parametros);
+        
+        return $query->rowCount();
+    }
 }
