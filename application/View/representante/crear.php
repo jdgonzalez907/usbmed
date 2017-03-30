@@ -4,7 +4,7 @@ use Mini\Model\ListaGlobal;
 
 ?>
 
-<h1>Crear plancha</h1>
+<h1 class="text-primary">Crear plancha</h1>
 
 <p>
     Por favor consulte a la persona llenando el siguiente formulario:
@@ -19,19 +19,21 @@ use Mini\Model\ListaGlobal;
                     <input type="text" class="form-control" id="Usuario_CEDULA" name="Usuario[CEDULA]" data-validation="required, number" value="<?= $usuario->getCEDULA() ?>"/>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-info">Buscar</button>
+                    <button type="submit" class="btn btn-info"><span class="glyphicon glyphicon-search"></span> Buscar</button>
                 </div>
             </form>
         </div>
-        <div class="col-sm-7 col-sm-offset-1">
+<!--        <div class="col-sm-7 col-sm-offset-1">
             <div class="well">
                 <p class="lead">Nota</p>
                 <p class="text-justify">
                     Recuerde que se le dará prioridad a los docentes, después a los egresados y por último a los estudiantes, 
                     por lo cuál cuando una persona tenga varios roles se habilitará aquel que respete lo dicho anteriormente.
+                    <br><br>
+                    Los egresados deben realizar su postulación vía web.
                 </p>
             </div>
-        </div>
+        </div>-->
     </div>
 
     <div class="table-responsive">
@@ -40,7 +42,6 @@ use Mini\Model\ListaGlobal;
                 <tr>
                     <th>Identificación</th>
                     <th>Nombres</th>
-                    <th>Rol</th>
                     <th>Acción</th>
                 </tr>
             </thead>
@@ -49,7 +50,6 @@ use Mini\Model\ListaGlobal;
                 <tr>
                     <td><?= $persona->IDENTIFICACION.' ('.$persona->TIPO_IDENTIFICACION.')' ?></td>
                     <td><?= $persona->NOMBRES ?></td>
-                    <td><?= ListaGlobal::getGrupoInteres($persona->GRUPO_INTERES) ?></td>
                     <td><button class="btn btn-link" type="button" data-toggle="modal" data-target="#modal_usbmed" data-tipomodal="modal-lg" data-url="<?= URL ?>representante/crearPlancha/<?= $persona->IDENTIFICACION ?>">Crear plancha</button></td>
                 </tr>
                 <?php endforeach; ?>

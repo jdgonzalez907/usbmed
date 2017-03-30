@@ -15,6 +15,8 @@ use Mini\Model\Programacion;
 use Mini\Model\Postulacion;
 use Mini\Model\ListaGlobal;
 use Mini\Model\Usuario;
+use Mini\Model\Voto;
+use mPDF;
 
 /**
  * Description of RepresentanteController
@@ -117,29 +119,106 @@ class RepresentanteController extends Controller {
         View::render('representante/programacion', ['alerta' => $alerta, 'model' => $model]);
     }
 
+    public function cargar() {
+        $this->verificarPermisos();
+
+        $alerta = [
+            'tipo' => 'info',
+            'mensaje' => 'Recuerde que la extensión del archivo debe ser .CSV y debe tener solo un campo que será la Identificación de la persona.'
+        ];
+
+        $model = new Voto();
+        $modelProgramacion = new Programacion();
+        $valido = false;
+
+        $alerta = $modelProgramacion->fechaActualEn('INS');
+
+        if (!$alerta) {
+            $valido = true;
+            if (isset($_FILES["Voto"])) {
+                header('Content-Type: application/octet-stream');
+                header("Content-Transfer-Encoding: Binary");
+                header("Content-disposition: attachment; filename=\"resultado_carga_votantes.csv\"");
+                set_time_limit(1200);
+
+                $outputBuffer = fopen("php://output", 'w');
+
+                $temporal = file($_FILES["Voto"]["tmp_name"]["VOTANTE"]);
+
+                foreach ($temporal as $i => $registro) {
+                    $mensajeCSV = [];
+                    if ($i > 0) {
+                        $fila = explode(';', $registro);
+
+                        if (isset($fila[0])) {
+                            $identificacion = trim($fila[0]);
+
+                            $persona = new Usuario();
+                            $persona->setCEDULA($identificacion);
+
+                            $informacion = $persona->getInfoPorCedula();
+
+                            $mensajeCSV[] = $identificacion;
+
+                            if ($informacion) {
+                                foreach ($informacion as $p => $info) {
+                                    if ($info->GRUPO_INTERES !== 'ADM') {
+                                        $crearVoto = new Voto();
+
+                                        $crearVoto->setANNIO_ID(date('Y'));
+                                        $crearVoto->setVOTANTE($info->IDENTIFICACION);
+                                        $crearVoto->setESTADO(($info->GRUPO_INTERES === 'EGR') ? 'A' : 'I');
+                                        $crearVoto->setGRUPO_INTERES($info->GRUPO_INTERES);
+
+                                        $yaTieneVotoConfigurado = $crearVoto->getUnico();
+
+                                        if ($yaTieneVotoConfigurado) {
+                                            $mensajeCSV[] = 'Advertencia: Para el grupo de interés: ' . $crearVoto->getGRUPO_INTERES() . ' ya tiene un voto configurado.';
+                                        } elseif ($crearVoto->insert()) {
+                                            $mensajeCSV[] = 'Éxito: Se configuró exitosamente un voto para el grupo de interés: ' . $crearVoto->getGRUPO_INTERES() . '.';
+                                        } else {
+                                            $mensajeCSV[] = 'Error: Ocurrió un error en el sistema, por favor contácte al administrador.';
+                                        }
+                                    } else {
+                                        $mensajeCSV[] = 'Error: La identificación suministrada no cumple con los roles para poder participar.';
+                                    }
+                                }
+                            } else {
+                                $mensajeCSV[] = 'Error: No se encuentra información asociada. Por favor contácte al administrador.';
+                            }
+                        } else {
+                            $mensajeCSV[] = 'Error: No ingresó una identificación.';
+                        }
+                    } else {
+                        $mensajeCSV[] = 'IDENTIFICACIÓN';
+                        $mensajeCSV[] = 'MENSAJES';
+                    }
+
+                    fputcsv($outputBuffer, array_map("utf8_decode", $mensajeCSV), ';');
+                }
+
+                fclose($outputBuffer);
+
+                exit;
+            }
+        }
+
+        View::render('representante/cargar', ['alerta' => $alerta, 'model' => $model, 'valido' => $valido]);
+    }
+
     public function postularme() {
         $this->loginUrl = 'usuario/iniciarSesion/representante/postularme';
         $this->verificarInicioSesion();
 
-        $alerta = null;
         $grupoInteres = null;
         $facultad = null;
         $model = new Postulacion();
         $modelProgramacion = new Programacion();
-        $modelProgramacion->getProgramacionActual();
-        $fechaActual = strtotime(date('Y/m/d H:i:s'));
+        $alerta = $modelProgramacion->fechaActualEn('INS');
 
-        if (!$modelProgramacion->getANNIO()) {
-            $alerta = [
-                'tipo' => 'warning',
-                'mensaje' => 'En el momento ho hay fechas habilitadas para las postulaciones.'
-            ];
-        } else if ($fechaActual < strtotime($modelProgramacion->getFECHA_INICIO_INSCRIPCION()) || $fechaActual > strtotime($modelProgramacion->getFECHA_FIN_INSCRIPCION())) {
-            $alerta = [
-                'tipo' => 'warning',
-                'mensaje' => 'No puede realizar la postulación porque la fecha actual no está entre las fechas de inscripciones.'
-            ];
-        } else {
+        if (!$alerta) {
+            $informacion = Session::get('usuario')['info'];
+
             $model->setANNIO_ID(date('Y'));
             $model->setTIPO_IDENTIFICACION(Session::get('usuario')['info'][0]->TIPO_IDENTIFICACION);
             $model->setIDENTIFICACION(Session::get('usuario')['usuario']);
@@ -150,24 +229,26 @@ class RepresentanteController extends Controller {
             $model->setFECHA_POSTULACION(date('Y/m/d H:i:s'));
 
             if (!$model->existePostulacion()) {
-                $informacion = Session::get('usuario')['info'];
-
                 foreach ($informacion as $info) {
-                    if ($info->GRUPO_INTERES === 'EGR') {
+                    if ($info->GRUPO_INTERES !== 'ADM') {
                         $grupoInteres[$info->GRUPO_INTERES] = ListaGlobal::getGrupoInteres($info->GRUPO_INTERES);
 
                         if ($info->GRUPO_INTERES === 'DOC' && is_numeric($info->FAC_DEP)) {
                             $info->FAC_DEP = ListaGlobal::getHomologacionFacultades($info->FAC_DEP);
                         }
 
+                        if (count(ListaGlobal::getFacultades($info->FAC_DEP)) > 1) {
+                            continue;
+                        }
                         $facultad[$info->GRUPO_INTERES][$info->FAC_DEP] = ListaGlobal::getFacultades($info->FAC_DEP);
+
                     }
                 }
-
+                
                 if (empty($grupoInteres)) {
                     $alerta = [
                         'tipo' => 'warning',
-                        'mensaje' => 'Usted no cuenta con el perfil <i>' . ListaGlobal::getGrupoInteres('EGR') . '</i> para poder realizar una postulación desde la web.'
+                        'mensaje' => 'Usted no cuenta con el perfil para poder realizar una postulación desde la web.'
                     ];
                 }
 
@@ -181,7 +262,7 @@ class RepresentanteController extends Controller {
                         $model->setFACULTAD($_POST["Postulacion"]["FACULTAD"]);
                         $model->setCORREO($_POST["Postulacion"]["CORREO"]);
                         $model->setTELEFONO($_POST["Postulacion"]["TELEFONO"]);
-                        $model->setPROPUESTA($_POST["Postulacion"]["PROPUESTA"]);
+                        $model->setOBSERVACIONES($model::OBSERVACION_DEFAULT);
 
                         $extension = substr($_FILES["Postulacion"]["name"]["FOTO"], strpos($_FILES["Postulacion"]["name"]["FOTO"], '.'));
 
@@ -191,16 +272,16 @@ class RepresentanteController extends Controller {
                         if (!is_dir($directorio)) {
                             mkdir($directorio, 0777, true);
                         }
-                        $nombre_aleatorio = rand(10000, 99999);
 
-                        move_uploaded_file($_FILES["Postulacion"]["tmp_name"]["FOTO"], $directorio . $nombre_aleatorio . $extension);
+                        move_uploaded_file($_FILES["Postulacion"]["tmp_name"]["FOTO"], $directorio . $model->getIDENTIFICACION() . $extension);
 
-                        $model->setFOTO($carpetaRepresentante . $nombre_aleatorio . $extension);
+                        $model->setFOTO($carpetaRepresentante . $model->getIDENTIFICACION() . $extension);
 
                         if ($model->insert()) {
+                            $model->enviarActualizacionPlancha();
                             $alerta = [
                                 'tipo' => 'success',
-                                'mensaje' => 'Usted se ha postulado correctamente..<br><br>Plancha: #<strong>' . $model->getPOSTULACION_ID() . '</strong><br>Estado: <strong>' . ListaGlobal::getEstados($model->getESTADO()) . '</strong><br><br><strong>Nota:</strong> Recuerde que sus datos serán revisados y si cumple con los requisitos su plancha se habilitará y le será notificado.'
+                                'mensaje' => 'Usted se ha postulado correctamente..<br><br>Plancha: #<strong>' . $model->getPOSTULACION_ID() . '</strong><br>Estado: <strong>' . ListaGlobal::getEstados($model->getESTADO()) . '</strong><br><br><strong>Nota:</strong> Recuerde que sus datos serán revisados y si cumple con los requisitos su plancha se habilitará y le será notificado por correo.'
                             ];
                         } else {
                             $alerta = [
@@ -225,12 +306,13 @@ class RepresentanteController extends Controller {
 
 
         View::render(
-                'representante/postularme', [
-            'alerta' => $alerta,
-            'model' => $model,
-            'grupoInteres' => $grupoInteres,
-            'facultad' => $facultad
-                ], 'login'
+                'representante/postularme', 
+                [
+                    'alerta' => $alerta,
+                    'model' => $model,
+                    'grupoInteres' => $grupoInteres,
+                    'facultad' => $facultad
+                ]
         );
     }
 
@@ -239,27 +321,17 @@ class RepresentanteController extends Controller {
 
         $model = new Postulacion();
         $dataProviderPosutlacion = [];
-        $modelProgramacion = new Programacion();
-        $modelProgramacion->getProgramacionActual();
-        $fechaActual = strtotime(date('Y/m/d H:i:s'));
         $valido = false;
 
-        $alerta = [
-            'tipo' => 'info',
-            'mensaje' => 'Por favor indique los filtros para proceder a buscar las planchas(año ' . date('Y') . ').'
-        ];
+        $modelProgramacion = new Programacion();
+        $alerta = $modelProgramacion->fechaActualEn('INS');
 
-        if (!$modelProgramacion->getANNIO()) {
+        if (!$alerta) {
             $alerta = [
-                'tipo' => 'warning',
-                'mensaje' => 'En el momento ho hay fechas habilitadas para las postulaciones.'
+                'tipo' => 'info',
+                'mensaje' => 'Por favor indique los filtros para proceder a buscar las planchas(año ' . date('Y') . ').'
             ];
-        } else if ($fechaActual < strtotime($modelProgramacion->getFECHA_INICIO_INSCRIPCION()) || $fechaActual > strtotime($modelProgramacion->getFECHA_FIN_INSCRIPCION())) {
-            $alerta = [
-                'tipo' => 'warning',
-                'mensaje' => 'No puede realizar modificaciones a las planchas porque la fecha actual no está entre las fechas de inscripción.'
-            ];
-        } else {
+
             $valido = true;
 
             if (isset($_GET["Postulacion"])) {
@@ -274,12 +346,13 @@ class RepresentanteController extends Controller {
         }
 
         View::render(
-                'representante/actualizar', [
-            'model' => $model,
-            'alerta' => $alerta,
-            'dataProviderPosutlacion' => $dataProviderPosutlacion,
-            'valido' => $valido
-                ]
+            'representante/actualizar', 
+            [
+                'model' => $model,
+                'alerta' => $alerta,
+                'dataProviderPosutlacion' => $dataProviderPosutlacion,
+                'valido' => $valido
+            ]
         );
     }
 
@@ -288,58 +361,36 @@ class RepresentanteController extends Controller {
 
         $usuario = new Usuario();
         $personas = [];
-        $alerta = null;
 
         $modelProgramacion = new Programacion();
-        $modelProgramacion->getProgramacionActual();
-        $fechaActual = strtotime(date('Y/m/d H:i:s'));
+        $alerta = $modelProgramacion->fechaActualEn('INS');
+
         $valido = false;
 
-        $alerta = [
-            'tipo' => 'info',
-            'mensaje' => 'Por favor indique los filtros para proceder a buscar las planchas(año ' . date('Y') . ').'
-        ];
+        if (!$alerta) {
+            $alerta = [
+                'tipo' => 'info',
+                'mensaje' => 'Por favor indique los filtros para proceder a buscar las planchas(año ' . date('Y') . ').'
+            ];
 
-        if (!$modelProgramacion->getANNIO()) {
-            $alerta = [
-                'tipo' => 'warning',
-                'mensaje' => 'En el momento ho hay fechas habilitadas para las postulaciones.'
-            ];
-        } else if ($fechaActual < strtotime($modelProgramacion->getFECHA_INICIO_INSCRIPCION()) || $fechaActual > strtotime($modelProgramacion->getFECHA_FIN_INSCRIPCION())) {
-            $alerta = [
-                'tipo' => 'warning',
-                'mensaje' => 'No puede crear planchas porque la fecha actual no está entre las fechas de inscripción.'
-            ];
-        } else {
             $valido = true;
 
             if (isset($_GET["Usuario"]["CEDULA"])) {
+                $alerta = null;
                 $usuario->setCEDULA($_GET["Usuario"]["CEDULA"]);
-                $personas = $usuario->getInfoPorCedula();
+                $informacion = $usuario->getInfoPorCedula();
 
-                if ($personas) {
-                    $docente = null;
-                    $egresado = null;
-                    $estudiante = null;
-                    foreach ($personas as $llave => $persona) {
-                        if ($persona->GRUPO_INTERES === 'DOC') {
-                            $docente = $persona;
-                        } elseif ($persona->GRUPO_INTERES === 'EGR') {
-                            $egresado = $persona;
-                        } elseif ($persona->GRUPO_INTERES === 'EST') {
-                            $estudiante = $persona;
-                        }
+                foreach ($informacion as $llave => $persona) {
+                    if ($persona->GRUPO_INTERES !== 'ADM') {
+                        $personas[0] = $persona;
                     }
+                }
 
-                    $personas = null;
-
-                    if ($docente) {
-                        $personas[] = $docente;
-                    } elseif ($egresado) {
-                        $personas[] = $egresado;
-                    } elseif ($estudiante) {
-                        $personas[] = $estudiante;
-                    }
+                if (empty($personas)) {
+                    $alerta = [
+                        'tipo' => 'danger',
+                        'mensaje' => 'El usuario NO presenta los roles necesarios para poder participar en la elección de representante.'
+                    ];
                 }
             }
         }
@@ -369,6 +420,7 @@ class RepresentanteController extends Controller {
                         $model->setFECHA_ACTUALIZA(date('Y/m/d H:i:s'));
 
                         if ($model->update()) {
+                            $model->enviarActualizacionPlancha();
                             $alerta = [
                                 'tipo' => 'success',
                                 'mensaje' => 'Plancha <strong>actualizada</strong> correctamente. <br><br> Refrescando los datos, espere por favor...'
@@ -408,13 +460,14 @@ class RepresentanteController extends Controller {
                 $model->setTELEFONO($info[0]->TELEFONO);
                 $model->setESTADO('I');
                 $model->setFECHA_POSTULACION(date('Y/m/d H:i:s'));
-                $model->setUSUARIO_ACTUALIZA(Session::get(Session::get('usuario')['usuario']));
+                $model->setUSUARIO_ACTUALIZA(Session::get('usuario')['usuario']);
+                $model->setOBSERVACIONES($model::OBSERVACION_DEFAULT);
                 $model->setFECHA_ACTUALIZA(date('Y/m/d H:i:s'));
                 $grupoInteres = [];
                 $facultad = [];
 
                 foreach ($info as $i) {
-                    if ($i->GRUPO_INTERES === 'EST' || $i->GRUPO_INTERES === 'DOC') {
+                    if ($i->GRUPO_INTERES !== 'ADM') {
                         $grupoInteres[$i->GRUPO_INTERES] = ListaGlobal::getGrupoInteres($i->GRUPO_INTERES);
 
                         if ($i->GRUPO_INTERES === 'DOC' && is_numeric($i->FAC_DEP)) {
@@ -441,7 +494,8 @@ class RepresentanteController extends Controller {
                             $model->setFACULTAD($_POST["Postulacion"]["FACULTAD"]);
                             $model->setCORREO($_POST["Postulacion"]["CORREO"]);
                             $model->setTELEFONO($_POST["Postulacion"]["TELEFONO"]);
-                            $model->setPROPUESTA($_POST["Postulacion"]["PROPUESTA"]);
+                            $model->setESTADO($_POST["Postulacion"]["ESTADO"]);
+                            $model->setOBSERVACIONES($_POST["Postulacion"]["OBSERVACIONES"]);
 
                             $extension = substr($_FILES["Postulacion"]["name"]["FOTO"], strpos($_FILES["Postulacion"]["name"]["FOTO"], '.'));
 
@@ -451,16 +505,16 @@ class RepresentanteController extends Controller {
                             if (!is_dir($directorio)) {
                                 mkdir($directorio, 0777, true);
                             }
-                            $nombre_aleatorio = rand(10000, 99999);
 
-                            move_uploaded_file($_FILES["Postulacion"]["tmp_name"]["FOTO"], $directorio . $nombre_aleatorio . $extension);
+                            move_uploaded_file($_FILES["Postulacion"]["tmp_name"]["FOTO"], $directorio . $model->getIDENTIFICACION() . $extension);
 
-                            $model->setFOTO($carpetaRepresentante . $nombre_aleatorio . $extension);
+                            $model->setFOTO($carpetaRepresentante . $model->getIDENTIFICACION() . $extension);
 
                             if ($model->insert()) {
+                                $model->enviarActualizacionPlancha();
                                 $alerta = [
                                     'tipo' => 'success',
-                                    'mensaje' => 'Usted se ha postulado correctamente..<br><br>Plancha: #<strong>' . $model->getPOSTULACION_ID() . '</strong><br>Estado: <strong>' . ListaGlobal::getEstados($model->getESTADO()) . '</strong><br><br><strong>Nota:</strong> Recuerde que sus datos serán revisados y si cumple con los requisitos su plancha se habilitará y le será notificado.'
+                                    'mensaje' => 'Usted se ha postulado correctamente..<br><br>Plancha: #<strong>' . $model->getPOSTULACION_ID() . '</strong><br>Estado: <strong>' . ListaGlobal::getEstados($model->getESTADO()) . '</strong><br><br><strong>Nota:</strong> Recuerde que sus datos serán revisados y si cumple con los requisitos su plancha se habilitará y le será notificado por correo.'
                                 ];
                             } else {
                                 $alerta = [
@@ -487,7 +541,44 @@ class RepresentanteController extends Controller {
     public function reportes() {
         $this->verificarPermisos();
 
-        View::render('representante/reportes', []);
+        View::render('representante/reportes');
+    }
+
+    public function reportePlanchas($tipo) {
+        $this->verificarPermisos();
+        $postulacion = new Postulacion();
+
+        $postulacion->setANNIO_ID(date('Y'));
+
+        $planchas = $postulacion->consultarPlanchas();
+
+        ob_start();
+        View::render('representante/reportePlanchas', ['planchas' => $planchas, 'tipo' => $tipo], []);
+        $html = ob_get_contents();
+        ob_clean();
+
+        $nombreArchivo = 'Reporte_de_planchas_' . date('Y');
+
+        switch ($tipo) {
+            case 'pdf':
+                $mpdf = new mPDF('c', 'A4', 10, '', 15, 15, 30, 10);
+                $mpdf->SetHeader('Univesridad San Buenaventura de Medellín||Elección de representantes ' . date('Y'));
+                $mpdf->setFooter('|{PAGENO}|');
+                $mpdf->WriteHTML($html);
+
+                $mpdf->Output($nombreArchivo, 'D');
+                break;
+
+            case 'excel':
+                header("Content-Encoding: UTF-8");
+                header("Content-type: application/vnd.ms-excel; charset=utf-8");
+                header("Content-Disposition: attachment; filename=$nombreArchivo");
+                echo utf8_decode($html);
+                break;
+
+            default:
+                break;
+        }
     }
 
 }

@@ -1,11 +1,6 @@
 <?php if (isset($alerta)): ?>
     <?php if (!is_null($alerta)): ?>
         <?= \Mini\Libs\Alerta::crear($alerta['tipo'], $alerta['mensaje']) ?>
-        <script>
-            setTimeout(function () {
-                location.reload()
-            }, 500);
-        </script>
         <?php exit(); ?>
     <?php endif; ?>
 <?php endif; ?>
@@ -79,14 +74,6 @@
                         <tr>
                             <td colspan="2">
                                 <div class="form-group">
-                                    <label for="Postulacion_PROPUESTA" class="control-label"><strong>Propuesta</strong> (<span id="pres-max-length-pro">500</span> cracteres restantes)</label></label>
-                                    <textarea class="form-control" data-validation="required, length" data-validation-length="max500" rows="7" id="Postulacion_PROPUESTA" name="Postulacion[PROPUESTA]"><?= $model->getPROPUESTA() ?></textarea>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div class="form-group">
                                     <div class="form-group">
                                         <label for="Postulacion_ESTADO" class="control-label"><strong>Estado</strong></label>
                                         <select class="form-control" id="Postulacion_ESTADO" name="Postulacion[ESTADO]" data-validation="required">
@@ -125,8 +112,6 @@
         modules: 'logic'
     });
 
-    $('#Postulacion_PROPUESTA').restrictLength($('#pres-max-length-pro'));
-
     $('#Postulacion_OBSERVACIONES').restrictLength($('#pres-max-length'));
 
     $('#frmCrearPlancha').submit(function (event) {
@@ -153,7 +138,7 @@
 
     $('#Postulacion_GRUPO_INTERES').change(function () {
         var sel1 = $(this).val();
-        $('#Postulacion_FACULTAD').html('<option valuue=\"\">Seleccione por favor</option>');
+        $('#Postulacion_FACULTAD').html('<option value=\"\">Seleccione por favor</option>');
         $.each(facultad[sel1], function (a, b) {
             $('#Postulacion_FACULTAD').append('<option value=\"' + a + '\">' + b + '</option>');
         });

@@ -18,7 +18,7 @@
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok-sign"></span> Recordar</button>
-                    <a class="btn btn-default pull-right" href="<?= URL ?>"><span class="glyphicon glyphicon-circle-arrow-left"></span> Iniciar sesión</a>
+                    <a class="btn btn-default pull-right" href="<?= URL.(isset($controlador) ? $controlador : '').(isset($accion) ? '/'.$accion : '') ?>"><span class="glyphicon glyphicon-circle-arrow-left"></span> Iniciar sesión</a>
                 </div>
                 <p class="text-justify">
                     <br>

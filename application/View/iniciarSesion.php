@@ -15,7 +15,7 @@
                     <input type="password" class="form-control" id="Usuario_CLAVE" name="Usuario[CLAVE]" placeholder="Ingrese su clave" data-validation="required">
                 </div>
                 <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-log-in"></span> Entrar</button>
-                <a href="<?= URL ?>usuario/recordarClave" class="btn btn-default pull-right"><span class="glyphicon glyphicon-question-sign"></span> ¿Olvidó su clave?</a>
+                <a href="<?= URL ?>usuario/recordarClave<?= (isset($controlador) ? '/'.$controlador : '').(isset($accion) ? '/'.$accion : '') ?>" class="btn btn-default pull-right"><span class="glyphicon glyphicon-question-sign"></span> ¿Olvidó su clave?</a>
                 <p class="text-justify">
                     <br>
                     <strong>Nota:</strong>

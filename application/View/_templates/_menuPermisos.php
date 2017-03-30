@@ -8,7 +8,7 @@
         {
             if ($menu['TIPO'] === 'C')
             {
-                $menu['NOMBRE'] = 'Módulo '. strtolower($menu['NOMBRE']);
+                $menu['NOMBRE'] = 'Aplicativo '. strtolower($menu['NOMBRE']);
             }
             echo '<li><a href="'.URL.$menu['URL'].'"><span class="glyphicon glyphicon-'.$menu['ICONO'].'"></span> '.$menu['NOMBRE'].'</a></<li>';
         }

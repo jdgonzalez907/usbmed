@@ -2,7 +2,7 @@
 
 use Mini\Model\ListaGlobal;
 ?>
-<h1>Planchas</h1>
+<h1 class="text-primary">Actualizar planchas</h1>
 
 <p>A continuación podrá listar las planchas para activarlas y/o inactivarlas, dependiendo sea su caso.</p>
 

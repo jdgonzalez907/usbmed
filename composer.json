@@ -15,6 +15,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
+        "mpdf/mpdf": "^6.1"
     },
     "autoload": {
         "psr-4": {

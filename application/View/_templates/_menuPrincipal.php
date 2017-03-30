@@ -8,7 +8,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="<?= URL ?>"><?= self::$titulo ?></a>
+            <a class="navbar-brand" href="<?= URL ?>">Aplicaciones</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -33,7 +33,7 @@
                         ?>
                     </ul>
                 </li>
-                <li><a href="<?= URL ?>home/contacto"><span class="glyphicon glyphicon-envelope"></span> Contácto</a></li>
+                <!--<li><a href="<?= URL ?>home/contacto"><span class="glyphicon glyphicon-envelope"></span> Contácto</a></li>-->
                 <li><a href="<?= URL ?>usuario/cambiarClave"><span class="glyphicon glyphicon-lock"></span> Cambiar clave</a></li>
                 <li><a href="<?= URL ?>usuario/cerrarSesion"><span class="glyphicon glyphicon-log-out"></span> Cerrar sesión(<?= \Mini\Core\Session::get('usuario')['usuario'] ?>)</a></li>
             </ul>

@@ -40,7 +40,8 @@ class ListaGlobal {
         '442' => 'MFCIE',
         '443' => 'MFPSI',
         '447' => 'MFDER',
-        '445' => 'MFEDU'
+        '445' => 'MFEDU',
+        '448' => 'CIDEH'
     ];
     private static $facultades = [
         'MFING' => 'INGENIERÍAS',
@@ -48,7 +49,8 @@ class ListaGlobal {
         'MFCIE' => 'CIENCIAS EMPRESARIALES',
         'MFPSI' => 'PSICOLOGÍA',
         'MFDER' => 'DERECHO',
-        'MFEDU' => 'EDUCACIÓN'
+        'MFEDU' => 'EDUCACIÓN',
+        'CIDEH' => 'CIDEH'
     ];
 
     public static function getEstados($keyEstado = null) {

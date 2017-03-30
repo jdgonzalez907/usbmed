@@ -68,14 +68,6 @@
                         <tr>
                             <td colspan="2">
                                 <div class="form-group">
-                                    <label for="Postulacion_PROPUESTA" class="control-label"><strong>Propuesta</strong></label>
-                                    <p><?= nl2br($model->getPROPUESTA()) ?></p>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div class="form-group">
                                     <div class="form-group">
                                         <label for="Postulacion_ESTADO" class="control-label"><strong>Estado</strong></label>
                                         <select class="form-control" id="Postulacion_ESTADO" name="Postulacion[ESTADO]" data-validation="required">

@@ -1,4 +1,4 @@
-<h1>Programación</h1>
+<h1 class="text-primary">Programación</h1>
 
 <p>Por favor llenar el formulario con los respectivos campos.</p>
 

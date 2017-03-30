@@ -16,7 +16,7 @@ namespace Mini\Core;
 class View {
     
     /** @var string Título de la página*/
-    public static $titulo = "USB de Medellín";
+    public static $titulo = "Aplicaciones - Universidad San Buenaventura de Medellín";
     
     private static $js = null;
     

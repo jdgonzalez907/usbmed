@@ -202,4 +202,50 @@ class Programacion extends Model {
         
         return $query->rowCount();
     }
+    
+    public function fechaActualEn($tipo)
+    {
+        $this->getProgramacionActual();
+        $fechaActual = strtotime(date('Y/m/d H:i:s'));
+        $alerta = null;
+        
+        switch ($tipo) {
+            case 'INS':
+                
+                if (!$this->getANNIO()) {
+                    $alerta = [
+                        'tipo' => 'warning',
+                        'mensaje' => 'En el momento ho hay fechas habilitadas para poder realizar la acción.'
+                    ];
+                } else if ($fechaActual < strtotime($this->getFECHA_INICIO_INSCRIPCION()) || $fechaActual > strtotime($this->getFECHA_FIN_INSCRIPCION())) {
+                    $alerta = [
+                        'tipo' => 'warning',
+                        'mensaje' => 'No puede realizar la acción porque la fecha actual no está entre las fechas de inscripciones.'
+                    ];
+                }
+
+                break;
+
+            case 'VOT':
+                
+                if (!$this->getANNIO()) {
+                    $alerta = [
+                        'tipo' => 'warning',
+                        'mensaje' => 'En el momento ho hay fechas habilitadas para poder realizar la acción.'
+                    ];
+                } else if ($fechaActual < strtotime($this->getFECHA_INICIO_VOTACION()) || $fechaActual > strtotime($this->getFECHA_FIN_VOTACION())) {
+                    $alerta = [
+                        'tipo' => 'warning',
+                        'mensaje' => 'No puede realizar la acción porque la fecha actual no está entre las fechas de votaciones.'
+                    ];
+                }
+                
+                break;
+                
+            default:
+                break;
+        }
+        
+        return $alerta;
+    }
 }

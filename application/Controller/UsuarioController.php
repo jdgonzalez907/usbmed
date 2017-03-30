@@ -64,40 +64,46 @@ class UsuarioController extends Controller {
         if ($tipoLogin === 'fechaNacimiento') {
             View::render('iniciarSesionFechaNacimiento', ['alerta' => $alerta, 'model' => $model], 'login');
         } else {
-            View::render('iniciarSesion', ['alerta' => $alerta, 'model' => $model], 'login');
+            View::render('iniciarSesion', ['alerta' => $alerta, 'model' => $model, 'controlador' => $controlador, 'accion' => $accion], 'login');
         }
     }
 
     public function cambiarClave() {
         $this->verificarInicioSesion();
-        
-        $alerta = null;        
+
+        $alerta = null;
         $model = new Usuario();
-        
-        if ( isset($_POST["Usuario"]) )
-        {
+
+        if (isset($_POST["Usuario"])) {
             $model->setCEDULA(Session::get('usuario')['usuario']);
-            $model->setCLAVE($_POST["Usuario"]["CLAVE_NUEVA"]);
+            $model->setCLAVE($_POST["Usuario"]["CLAVE"]);
+            $claveActual = $model->claveActual();
             
-            if ( $model->cambiarClave() )
-            {
-                $alerta = [
-                    'tipo' => 'success',
-                    'mensaje' => 'Su clave ha sido <strong>actualizada</strong> correctamente.'
-                ];
-            }else{
+            if ($claveActual->ES_VALIDA > 0) {
+                $model->setCLAVE($_POST["Usuario"]["CLAVE_NUEVA"]);
+                if ($model->cambiarClave()) {
+                    $alerta = [
+                        'tipo' => 'success',
+                        'mensaje' => 'Su clave ha sido <strong>actualizada</strong> correctamente.'
+                    ];
+                } else {
+                    $alerta = [
+                        'tipo' => 'danger',
+                        'mensaje' => 'Ocurrió un error, contácte al administrador del sistema.'
+                    ];
+                }
+            } else {
                 $alerta = [
                     'tipo' => 'danger',
-                    'mensaje' => 'Ocurrió un error, contácte al administrador del sistema.'
+                    'mensaje' => 'La clave actual ingresada no corresponde con la registrada en la base de datos.'
                 ];
             }
-            
         }
 
-        View::render('usuario/cambiarClave', ['model' => $model, 'alerta' => $alerta], 'login');
+        View::render('usuario/cambiarClave', ['model' => $model, 'alerta' => $alerta], 'menu_top');
     }
 
-    public function recordarClave() {
+    public function recordarClave($controlador = 'home', $accion = 'index') {
         $alerta = null;
         $model = new Usuario();
 
@@ -113,9 +119,9 @@ class UsuarioController extends Controller {
                 $nombre = "";
 
                 foreach ($info as $key => $value) {
-                    $correos[]  = $value->CORREO;
-                    $clave      = $value->CLAVE;
-                    $nombre     = $value->NOMBRES;
+                    $correos[] = $value->CORREO;
+                    $clave = $value->CLAVE;
+                    $nombre = $value->NOMBRES;
                 }
 
                 $cabeceras = 'MIME-Version: 1.0' . "\r\n";
@@ -124,12 +130,12 @@ class UsuarioController extends Controller {
 
                 $titulo = "Recordar clave - USB Medellín";
                 $para = implode(',', $correos);
-                
+
                 ob_start();
                 View::render('_templates/email/recordarClave', [], []);
                 $mensaje = ob_get_contents();
                 ob_clean();
-                
+
                 $mensaje = str_replace('{_NOMBRE_}', $nombre, $mensaje);
                 $mensaje = str_replace('{_CLAVE_}', $clave, $mensaje);
 
@@ -138,7 +144,7 @@ class UsuarioController extends Controller {
                 if ($enviado) {
                     $alerta = [
                         'tipo' => 'success',
-                        'mensaje' => 'Se envió la contraseña al(los) siguiente(es) correo(s): <br><br>- '. implode('<br>- ', $correos)
+                        'mensaje' => 'Se envió la contraseña al(los) siguiente(es) correo(s): <br><br>- ' . implode('<br>- ', $correos)
                     ];
                 } else {
                     $alerta = [
@@ -154,14 +160,14 @@ class UsuarioController extends Controller {
             }
         }
 
-        View::render('usuario/recordarClave', ['alerta' => $alerta, 'model' => $model], 'login');
+        View::render('usuario/recordarClave', ['alerta' => $alerta, 'model' => $model, 'controlador' => $controlador, 'accion' => $accion], 'login');
     }
 
     public function cerrarSesion($controlador = "", $accion = "") {
         Session::destroy();
         $url = ($controlador != "") ? $controlador : "usuario";
         $url .= '/' . (($accion != "") ? $accion : "iniciarSesion");
-        
+
         View::redirect($url);
     }
 

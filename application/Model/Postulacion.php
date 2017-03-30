@@ -9,6 +9,7 @@
 namespace Mini\Model;
 
 use Mini\Core\Model;
+use Mini\Core\View;
 
 /**
  * Description of Postulacion
@@ -16,6 +17,8 @@ use Mini\Core\Model;
  * @author ingeniero.analista1
  */
 class Postulacion extends Model {
+
+    const OBSERVACION_DEFAULT = 'Se creó la plancha exitosamente. Se procederá a verificar los datos.';
 
     private $POSTULACION_ID;
     private $ANNIO_ID;
@@ -28,7 +31,6 @@ class Postulacion extends Model {
     private $TELEFONO;
     private $ESTADO;
     private $FOTO;
-    private $PROPUESTA;
     private $OBSERVACIONES;
     private $USUARIO_ACTUALIZA;
     private $FECHA_ACTUALIZA;
@@ -76,10 +78,6 @@ class Postulacion extends Model {
 
     public function getFOTO() {
         return $this->FOTO;
-    }
-
-    public function getPROPUESTA() {
-        return $this->PROPUESTA;
     }
 
     public function getOBSERVACIONES() {
@@ -142,10 +140,6 @@ class Postulacion extends Model {
         $this->FOTO = $FOTO;
     }
 
-    public function setPROPUESTA($PROPUESTA) {
-        $this->PROPUESTA = $PROPUESTA;
-    }
-
     public function setOBSERVACIONES($OBSERVACIONES) {
         $this->OBSERVACIONES = $OBSERVACIONES;
     }
@@ -196,7 +190,6 @@ class Postulacion extends Model {
             $this->setOBSERVACIONES($resultado->OBSERVACIONES);
             $this->setUSUARIO_ACTUALIZA($resultado->USUARIO_ACTUALIZA);
             $this->setFECHA_ACTUALIZA($resultado->FECHA_ACTUALIZA);
-            $this->setPROPUESTA($resultado->PROPUESTA);
             $this->setFECHA_POSTULACION($resultado->FECHA_POSTULACION);
 
             return true;
@@ -224,10 +217,10 @@ class Postulacion extends Model {
                 . "TELEFONO, "
                 . "ESTADO, "
                 . "FOTO, "
-                . "PROPUESTA, "
                 . "FECHA_POSTULACION, "
                 . "USUARIO_ACTUALIZA, "
-                . "FECHA_ACTUALIZA) values ("
+                . "FECHA_ACTUALIZA,"
+                . "OBSERVACIONES) values ("
                 . ":postulacion_id, "
                 . ":annio_id, "
                 . ":grupo_interes, "
@@ -239,10 +232,10 @@ class Postulacion extends Model {
                 . ":telefono, "
                 . ":estado, "
                 . ":foto, "
-                . ":propuesta, "
                 . "TO_DATE(:fecha_postulacion, 'YYYY/MM/DD HH24:MI:SS'),"
                 . ":usuario_actualiza,"
                 . "TO_DATE(:fecha_actualiza, 'YYYY/MM/DD HH24:MI:SS'),"
+                . ":observaciones"
                 . ")";
 
         $query = $this->db->prepare($sql);
@@ -258,11 +251,12 @@ class Postulacion extends Model {
             ':telefono' => $this->getTELEFONO(),
             ':estado' => $this->getESTADO(),
             ':foto' => $this->getFOTO(),
-            ':propuesta' => $this->getPROPUESTA(),
             ':fecha_postulacion' => $this->getFECHA_POSTULACION(),
             ':usuario_actualiza' => $this->getUSUARIO_ACTUALIZA(),
-            ':fecha_actualiza' => $this->getFECHA_ACTUALIZA()
+            ':fecha_actualiza' => $this->getFECHA_ACTUALIZA(),
+            ':observaciones' => $this->getOBSERVACIONES()
         ];
+
         $query->execute($parametros);
 
         return $query->rowCount();
@@ -281,7 +275,6 @@ class Postulacion extends Model {
                 . "TELEFONO = :telefono, "
                 . "ESTADO = :estado, "
                 . "FOTO = :foto, "
-                . "PROPUESTA = :propuesta, "
                 . "OBSERVACIONES = :observaciones, "
                 . "USUARIO_ACTUALIZA = :usuario_actualiza, "
                 . "FECHA_ACTUALIZA = TO_DATE(:fecha_actualiza , 'YYYY/MM/DD HH24:MI:SS'),"
@@ -302,7 +295,6 @@ class Postulacion extends Model {
             ':telefono' => $this->getTELEFONO(),
             ':estado' => $this->getESTADO(),
             ':foto' => $this->getFOTO(),
-            ':propuesta' => $this->getPROPUESTA(),
             ':observaciones' => $this->getOBSERVACIONES(),
             ':usuario_actualiza' => $this->getUSUARIO_ACTUALIZA(),
             ':fecha_actualiza' => $this->getFECHA_ACTUALIZA(),
@@ -329,7 +321,6 @@ class Postulacion extends Model {
                 . "OBSERVACIONES, "
                 . "USUARIO_ACTUALIZA, "
                 . "TO_CHAR(FECHA_ACTUALIZA , 'YYYY/MM/DD HH24:MI:SS') FECHA_ACTUALIZA, "
-                . "PROPUESTA, "
                 . "TO_CHAR(FECHA_POSTULACION , 'YYYY/MM/DD HH24:MI:SS') FECHA_POSTULACION "
                 . "from "
                 . "MU_REP_POSTULACION "
@@ -366,7 +357,6 @@ class Postulacion extends Model {
                 . "OBSERVACIONES, "
                 . "USUARIO_ACTUALIZA, "
                 . "TO_CHAR(FECHA_ACTUALIZA , 'YYYY/MM/DD HH24:MI:SS') FECHA_ACTUALIZA, "
-                . "PROPUESTA, "
                 . "TO_CHAR(FECHA_POSTULACION , 'YYYY/MM/DD HH24:MI:SS') FECHA_POSTULACION "
                 . "from "
                 . "MU_REP_POSTULACION "
@@ -397,7 +387,6 @@ class Postulacion extends Model {
             $this->setOBSERVACIONES($resultado->OBSERVACIONES);
             $this->setUSUARIO_ACTUALIZA($resultado->USUARIO_ACTUALIZA);
             $this->setFECHA_ACTUALIZA($resultado->FECHA_ACTUALIZA);
-            $this->setPROPUESTA($resultado->PROPUESTA);
             $this->setFECHA_POSTULACION(($resultado->FECHA_POSTULACION));
 
             return true;
@@ -422,7 +411,6 @@ class Postulacion extends Model {
                 . "OBSERVACIONES, "
                 . "USUARIO_ACTUALIZA, "
                 . "TO_CHAR(FECHA_ACTUALIZA , 'YYYY/MM/DD HH24:MI:SS') FECHA_ACTUALIZA, "
-                . "PROPUESTA, "
                 . "TO_CHAR(FECHA_POSTULACION , 'YYYY/MM/DD HH24:MI:SS') FECHA_POSTULACION "
                 . "from "
                 . "MU_REP_POSTULACION "
@@ -455,13 +443,67 @@ class Postulacion extends Model {
             $this->setOBSERVACIONES($resultado->OBSERVACIONES);
             $this->setUSUARIO_ACTUALIZA($resultado->USUARIO_ACTUALIZA);
             $this->setFECHA_ACTUALIZA($resultado->FECHA_ACTUALIZA);
-            $this->setPROPUESTA($resultado->PROPUESTA);
             $this->setFECHA_POSTULACION(($resultado->FECHA_POSTULACION));
 
             return true;
         } else {
             return false;
         }
+    }
+
+    public function consultarPlanchas() {
+        $sql = "select "
+                . "POSTULACION_ID, "
+                . "ANNIO_ID, "
+                . "GRUPO_INTERES, "
+                . "FACULTAD, "
+                . "TIPO_IDENTIFICACION, "
+                . "IDENTIFICACION, "
+                . "NOMBRES, "
+                . "CORREO, "
+                . "TELEFONO, "
+                . "ESTADO, "
+                . "FOTO, "
+                . "OBSERVACIONES, "
+                . "USUARIO_ACTUALIZA, "
+                . "TO_CHAR(FECHA_ACTUALIZA , 'YYYY/MM/DD HH24:MI:SS') FECHA_ACTUALIZA, "
+                . "TO_CHAR(FECHA_POSTULACION , 'YYYY/MM/DD HH24:MI:SS') FECHA_POSTULACION "
+                . "from "
+                . "MU_REP_POSTULACION "
+                . "where ANNIO_ID = :annio_id "
+                . "order by GRUPO_INTERES asc, FACULTAD asc, IDENTIFICACION asc";
+
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':annio_id' => $this->getANNIO_ID()
+        ];
+
+        $query->execute($parametros);
+
+        return $query->fetchAll();
+    }
+
+    public function enviarActualizacionPlancha() {
+        $cabeceras = 'MIME-Version: 1.0' . "\r\n";
+        $cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+        $cabeceras .= 'From: Universidad San Buenaventura de Medellin<usbmed@usbmed.edu.co>';
+
+        $titulo = "Actualización a la plancha #".$this->getPOSTULACION_ID()." - Universidad San Buenaventura de Medellín";
+        $para = 'ingeniero.analista1@usbmed.edu.co';//$this->getCORREO();
+
+        ob_start();
+        View::render('_templates/email/actualizacionPlancha', [], []);
+        $mensaje = ob_get_contents();
+        ob_clean();
+
+        $mensaje = str_replace('{_NOMBRE_}', $this->getNOMBRES(), $mensaje);
+        $mensaje = str_replace('{_PLANCHA_}', $this->getPOSTULACION_ID(), $mensaje);
+        $mensaje = str_replace('{_OBSERVACION_}', nl2br($this->getOBSERVACIONES()), $mensaje);
+        $mensaje = str_replace('{_ESTADO_}', ListaGlobal::getEstados($this->getESTADO()), $mensaje);
+
+        $enviado = mail($para, $titulo, $mensaje, $cabeceras);
+        
+        return $enviado;
     }
 
 }
