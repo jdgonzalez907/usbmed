@@ -109,3 +109,25 @@ table.dataTable {
     background-color: #bdc3c7;
     border: 1px solid transparent;
 }
+
+.img-carousel {    
+    width: 100%;
+    max-width: 500px !important;
+    height: 100%;
+    max-height: 335px !important;
+}
+
+.img-presentacion{
+    max-width: 100px;
+    max-height: 100px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.presentacion {
+    margin-top: 15px;
+    margin-bottom: -15px;
+    border-radius: 0px 0px 5px 5px;
+    background-color: #555555;
+    color: #f2f2f2;
+}
