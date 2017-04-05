@@ -489,7 +489,7 @@ class Postulacion extends Model {
         $cabeceras .= 'From: Universidad San Buenaventura de Medellin<usbmed@usbmed.edu.co>';
 
         $titulo = "Actualización a la plancha #".$this->getPOSTULACION_ID()." - Universidad San Buenaventura de Medellín";
-        $para = 'ingeniero.analista1@usbmed.edu.co';//$this->getCORREO();
+        $para = $this->getCORREO();
 
         ob_start();
         View::render('_templates/email/actualizacionPlancha', [], []);

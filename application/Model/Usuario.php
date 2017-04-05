@@ -10,6 +10,7 @@ namespace Mini\Model;
 
 use Mini\Core\Model;
 use Mini\Core\Session;
+use Mini\Core\View;
 
 /**
  * Description of Usuario
@@ -106,6 +107,7 @@ class Usuario extends Model {
 
     public function getInfoPorCedula() {
         $sql = "select "
+                . "usu.CLAVE, "
                 . "per.* "
                 . "from COLILLA_EMPLEADO usu "
                 . "inner join MU_PERSONA per on usu.CEDULA = per.IDENTIFICACION "
@@ -234,6 +236,27 @@ class Usuario extends Model {
         $query->execute($parametros);
 
         return $query->rowCount();
+    }
+
+    public function enviarClave($correo, $clave, $nombre) {
+        $cabeceras = 'MIME-Version: 1.0' . "\r\n";
+        $cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+        $cabeceras .= 'From: Universidad San Buenaventura de Medellin<usbmed@usbmed.edu.co>';
+
+        $titulo = "Recordar clave - USB Medellín";
+        $para = $correo;
+
+        ob_start();
+        View::render('_templates/email/recordarClave', [], []);
+        $mensaje = ob_get_contents();
+        ob_clean();
+
+        $mensaje = str_replace('{_NOMBRE_}', $nombre, $mensaje);
+        $mensaje = str_replace('{_CLAVE_}', $clave, $mensaje);
+
+        $enviado = mail($para, $titulo, $mensaje, $cabeceras);
+
+        return $enviado;
     }
 
 }

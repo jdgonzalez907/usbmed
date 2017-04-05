@@ -26,7 +26,7 @@
     <body>
 
         <?= self::render('_templates/_menuPrincipal', [], '') ?>
-
+        
         <div class="container">
             <div class="row">
                 <div class="col-sm-12">

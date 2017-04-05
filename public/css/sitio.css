@@ -93,3 +93,19 @@ table.dataTable {
 .tab-content > .tab-pane {
     padding: 10px;
 }
+
+.bienvenida {
+    margin-top: -15px;
+    border: 1px solid #E87E04;
+    border-radius: 5px 5px 0px 0px;
+    background-color: #E67E22;
+    color: #fff;
+    padding-bottom: 30px;
+    margin-bottom: 15px;
+}
+
+.well-bienvenida {
+    margin-top: -52.5px;
+    background-color: #bdc3c7;
+    border: 1px solid transparent;
+}

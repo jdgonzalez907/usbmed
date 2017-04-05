@@ -240,11 +240,11 @@ class RepresentanteController extends Controller {
                         if (count(ListaGlobal::getFacultades($info->FAC_DEP)) > 1) {
                             continue;
                         }
+                        
                         $facultad[$info->GRUPO_INTERES][$info->FAC_DEP] = ListaGlobal::getFacultades($info->FAC_DEP);
-
                     }
                 }
-                
+
                 if (empty($grupoInteres)) {
                     $alerta = [
                         'tipo' => 'warning',
@@ -306,12 +306,11 @@ class RepresentanteController extends Controller {
 
 
         View::render(
-                'representante/postularme', 
-                [
-                    'alerta' => $alerta,
-                    'model' => $model,
-                    'grupoInteres' => $grupoInteres,
-                    'facultad' => $facultad
+                'representante/postularme', [
+            'alerta' => $alerta,
+            'model' => $model,
+            'grupoInteres' => $grupoInteres,
+            'facultad' => $facultad
                 ]
         );
     }
@@ -346,13 +345,12 @@ class RepresentanteController extends Controller {
         }
 
         View::render(
-            'representante/actualizar', 
-            [
-                'model' => $model,
-                'alerta' => $alerta,
-                'dataProviderPosutlacion' => $dataProviderPosutlacion,
-                'valido' => $valido
-            ]
+                'representante/actualizar', [
+            'model' => $model,
+            'alerta' => $alerta,
+            'dataProviderPosutlacion' => $dataProviderPosutlacion,
+            'valido' => $valido
+                ]
         );
     }
 
@@ -399,45 +397,41 @@ class RepresentanteController extends Controller {
     }
 
     public function actualizarPlancha($id) {
-        if ($this->isAjax()) {
-            if (!$this->verificarPermisos(false)) {
-                View::render('control/error403', [], '');
+        if (!$this->verificarPermisos(false)) {
+            View::render('control/error403', [], '');
+        } else {
+            $alerta = null;
+            $model = new Postulacion();
+
+            $model->setPOSTULACION_ID($id);
+            if (!$model->getPlancha()) {
+                $alerta = [
+                    'tipo' => 'danger',
+                    'mensaje' => 'La plancha #' . $id . ' no se encuentra en la base de datos.'
+                ];
             } else {
-                $alerta = null;
-                $model = new Postulacion();
+                if (isset($_POST["Postulacion"])) {
+                    $model->setESTADO($_POST["Postulacion"]["ESTADO"]);
+                    $model->setOBSERVACIONES($_POST["Postulacion"]["OBSERVACIONES"]);
+                    $model->setUSUARIO_ACTUALIZA(Session::get('usuario')['usuario']);
+                    $model->setFECHA_ACTUALIZA(date('Y/m/d H:i:s'));
 
-                $model->setPOSTULACION_ID($id);
-                if (!$model->getPlancha()) {
-                    $alerta = [
-                        'tipo' => 'danger',
-                        'mensaje' => 'La plancha #' . $id . ' no se encuentra en la base de datos.'
-                    ];
-                } else {
-                    if (isset($_POST["Postulacion"])) {
-                        $model->setESTADO($_POST["Postulacion"]["ESTADO"]);
-                        $model->setOBSERVACIONES($_POST["Postulacion"]["OBSERVACIONES"]);
-                        $model->setUSUARIO_ACTUALIZA(Session::get('usuario')['usuario']);
-                        $model->setFECHA_ACTUALIZA(date('Y/m/d H:i:s'));
-
-                        if ($model->update()) {
-                            $model->enviarActualizacionPlancha();
-                            $alerta = [
-                                'tipo' => 'success',
-                                'mensaje' => 'Plancha <strong>actualizada</strong> correctamente. <br><br> Refrescando los datos, espere por favor...'
-                            ];
-                        } else {
-                            $alerta = [
-                                'tipo' => 'danger',
-                                'mensaje' => 'Ocurrió un error, contácte al administrador del sistema.'
-                            ];
-                        }
+                    if ($model->update()) {
+                        $model->enviarActualizacionPlancha();
+                        $alerta = [
+                            'tipo' => 'success',
+                            'mensaje' => 'Plancha <strong>actualizada</strong> correctamente. <br><br> Refrescando los datos, espere por favor...'
+                        ];
+                    } else {
+                        $alerta = [
+                            'tipo' => 'danger',
+                            'mensaje' => 'Ocurrió un error, contácte al administrador del sistema.'
+                        ];
                     }
                 }
-
-                View::render('representante/actualizarPlancha', ['id' => $id, 'model' => $model, 'alerta' => $alerta], '');
             }
-        } else {
-            View::redirect('control/error400');
+
+            View::render('representante/actualizarPlancha', ['id' => $id, 'model' => $model, 'alerta' => $alerta], '');
         }
     }
 
@@ -472,6 +466,10 @@ class RepresentanteController extends Controller {
 
                         if ($i->GRUPO_INTERES === 'DOC' && is_numeric($i->FAC_DEP)) {
                             $i->FAC_DEP = ListaGlobal::getHomologacionFacultades($i->FAC_DEP);
+                        }
+                        
+                        if (count(ListaGlobal::getFacultades($i->FAC_DEP)) > 1) {
+                            continue;
                         }
 
                         $facultad[$i->GRUPO_INTERES][$i->FAC_DEP] = ListaGlobal::getFacultades($i->FAC_DEP);
@@ -566,13 +564,13 @@ class RepresentanteController extends Controller {
                 $mpdf->setFooter('|{PAGENO}|');
                 $mpdf->WriteHTML($html);
 
-                $mpdf->Output($nombreArchivo, 'D');
+                $mpdf->Output($nombreArchivo.'.pdf', 'D');
                 break;
 
             case 'excel':
                 header("Content-Encoding: UTF-8");
                 header("Content-type: application/vnd.ms-excel; charset=utf-8");
-                header("Content-Disposition: attachment; filename=$nombreArchivo");
+                header("Content-Disposition: attachment; filename=$nombreArchivo.xls");
                 echo utf8_decode($html);
                 break;
 

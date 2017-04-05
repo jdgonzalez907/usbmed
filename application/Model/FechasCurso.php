@@ -17,7 +17,7 @@ use Mini\Core\Model;
  */
 class FechasCurso extends Model{
     
-    const _CURSO_ASCENSO_REUBICACION_ = 803;
+    const _CURSO_ASCENSO_REUBICACION_ = [803, 804];
     
     private $COD_CURSO;
     private $CONSECUTIVO;
@@ -161,7 +161,7 @@ class FechasCurso extends Model{
                 . "* "
                 . "from "
                 . "CON00.TER_FECHAS_CURSO "
-                . "where COD_CURSO = :curso "
+                . "where COD_CURSO in :curso "
                 . "and CEDULA_PROFESOR = :cedula_profesor";
         
         $query = $this->db->prepare($sql);
@@ -169,9 +169,9 @@ class FechasCurso extends Model{
             ':curso' => self::_CURSO_ASCENSO_REUBICACION_,
             ':cedula_profesor' => $this->getCEDULA_PROFESOR()
         ];
-        
+        \Mini\Libs\VarDump::dump($query);
         $query->execute($parametros);
-        
+        \Mini\Libs\VarDump::dump($query);exit;
         return $query->fetchAll();
     }
     

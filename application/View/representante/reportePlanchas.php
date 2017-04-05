@@ -76,7 +76,6 @@ $facultad = null;
             <th class="th">Nombre</th>
             <th class="th">Correo</th>
             <th class="th">Telefono</th>
-            <th class="th">Propuesta</th>
             <?php if($tipo!=='excel'): ?><th class="th">Foto</th><?php endif; ?>
             <th class="th">Estado</th>
         </tr>
@@ -91,7 +90,6 @@ $facultad = null;
             <td class="td"><?= $p->NOMBRES ?></td>
             <td class="td"><?= $p->CORREO ?></td>
             <td class="td"><?= $p->TELEFONO ?></td>
-            <td class="td"><?= nl2br($p->PROPUESTA) ?></td>
             <?php if($tipo!=='excel'): ?><td class="td foto"><img class="foto-resize" src="<?= URL.$p->FOTO ?>"></td><?php endif; ?>
             <td class="td" style="color:white; background-color: <?= ($p->ESTADO === 'A' ? '#16a085' : '#c0392b' ) ?>"><?= ListaGlobal::getEstados($p->ESTADO) ?></td>
         </tr>

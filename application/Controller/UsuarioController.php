@@ -62,9 +62,9 @@ class UsuarioController extends Controller {
         }
 
         if ($tipoLogin === 'fechaNacimiento') {
-            View::render('iniciarSesionFechaNacimiento', ['alerta' => $alerta, 'model' => $model], 'login');
+            View::render('usuario/iniciarSesionFechaNacimiento', ['alerta' => $alerta, 'model' => $model], 'login');
         } else {
-            View::render('iniciarSesion', ['alerta' => $alerta, 'model' => $model, 'controlador' => $controlador, 'accion' => $accion], 'login');
+            View::render('usuario/iniciarSesion', ['alerta' => $alerta, 'model' => $model, 'controlador' => $controlador, 'accion' => $accion], 'login');
         }
     }
 
@@ -78,7 +78,7 @@ class UsuarioController extends Controller {
             $model->setCEDULA(Session::get('usuario')['usuario']);
             $model->setCLAVE($_POST["Usuario"]["CLAVE"]);
             $claveActual = $model->claveActual();
-            
+
             if ($claveActual->ES_VALIDA > 0) {
                 $model->setCLAVE($_POST["Usuario"]["CLAVE_NUEVA"]);
                 if ($model->cambiarClave()) {
@@ -108,43 +108,29 @@ class UsuarioController extends Controller {
         $model = new Usuario();
 
         if (isset($_POST["Usuario"])) {
+            
             $model->setCEDULA($_POST["Usuario"]["CEDULA"]);
-            $model->setCLAVE($_POST["Usuario"]["CLAVE"]);
+            $model->setCLAVE((isset($_POST["Usuario"]["CLAVE"]) ? $_POST["Usuario"]["CLAVE"] : ''));
 
-            $info = $model->getInfoPorFecha();
+            $info = $model->getInfoPorCedula();
 
             if ($info) {
-                $correos = [];
+                $correo = "";
                 $clave = "";
                 $nombre = "";
 
                 foreach ($info as $key => $value) {
-                    $correos[] = $value->CORREO;
+                    $correo = ($value->CORREO == $model->getCLAVE()) ? $model->getCLAVE() : "";
                     $clave = $value->CLAVE;
                     $nombre = $value->NOMBRES;
                 }
 
-                $cabeceras = 'MIME-Version: 1.0' . "\r\n";
-                $cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-                $cabeceras .= 'From: Universidad San Buenaventura de Medellin<usbmed@usbmed.edu.co>';
-
-                $titulo = "Recordar clave - USB Medellín";
-                $para = implode(',', $correos);
-
-                ob_start();
-                View::render('_templates/email/recordarClave', [], []);
-                $mensaje = ob_get_contents();
-                ob_clean();
-
-                $mensaje = str_replace('{_NOMBRE_}', $nombre, $mensaje);
-                $mensaje = str_replace('{_CLAVE_}', $clave, $mensaje);
-
-                $enviado = mail($para, $titulo, $mensaje, $cabeceras);
+                $enviado = $model->enviarClave($correo, $clave, $nombre);
 
                 if ($enviado) {
                     $alerta = [
                         'tipo' => 'success',
-                        'mensaje' => 'Se envió la contraseña al(los) siguiente(es) correo(s): <br><br>- ' . implode('<br>- ', $correos)
+                        'mensaje' => 'Se envió la contraseña al siguiente correo: <br><br>- ' . $correo
                     ];
                 } else {
                     $alerta = [
@@ -169,6 +155,46 @@ class UsuarioController extends Controller {
         $url .= '/' . (($accion != "") ? $accion : "iniciarSesion");
 
         View::redirect($url);
+    }
+
+    public function validarCedula() {
+        $this->isAjax();
+        $retorno = [];
+
+        if ($_POST["cedula"]) {
+            $model = new Usuario;
+            $model->setCEDULA($_POST["cedula"]);
+
+            $informacion = $model->getInfoPorCedula();
+
+            if ($informacion) {
+                $correos = [];
+
+                foreach ($informacion as $key => $info) {
+                    if (!is_null($info->CORREO) && !in_array($info->CORREO, $correos)) {
+                        $correos[] = $info->CORREO;
+                    }
+                }
+
+                if ($correos) {
+                    $retorno = [
+                        'tipo' => 'success',
+                        'mensaje' => $correos
+                    ];
+                } else {
+                    $retorno = [
+                        'tipo' => 'error',
+                        'mensaje' => 'No se encuentran correos asociados, por favor contácte a la universidad si cree que esto es un error.'
+                    ];
+                }
+            } else {
+                $retorno = [
+                    'tipo' => 'error',
+                    'mensaje' => 'No se encuentra información disponible, por favor contácte a la universidad si cree que esto es un error.'];
+            }
+        }
+
+        echo json_encode($retorno);
     }
 
 }
