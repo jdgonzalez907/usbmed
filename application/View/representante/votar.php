@@ -3,7 +3,7 @@
         <h1 class="text-primary">Votar</h1>
         <p>
             A continuación se lista una tabla con los votos disponibles de acuerdo a su relación con la universidad. 
-            De acuerdo a esto se le habilitarán las votaciones.
+            Teniendo en cuenta esto se le habilitarán las votaciones.
         </p>
     </div>
     <div class="col-sm-3">

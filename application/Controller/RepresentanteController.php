@@ -541,10 +541,10 @@ class RepresentanteController extends Controller {
     }
 
     public function votar() {
-        //$this->verificarPermisos();
+        $this->verificarPermisos();
 
         $modelProgramacion = new Programacion();
-        $alerta = null; //$modelProgramacion->fechaActualEn('VOT');
+        $alerta = $modelProgramacion->fechaActualEn('VOT');
         $valido = false;
         $grupoInteres = [];
         $facultad = [];
@@ -562,7 +562,7 @@ class RepresentanteController extends Controller {
         foreach ($votosDisponibles as $voto) {
             if (!$voto->VOTO_FECHA && !$voto->POSTULACION_ID) {
                 $votosValidos[$voto->GRUPO_INTERES] = 1;
-            }else{
+            } else {
                 $votosValidos[$voto->GRUPO_INTERES] = 'Utilizado';
             }
         }
@@ -589,6 +589,13 @@ class RepresentanteController extends Controller {
             }
         }
 
+        if (empty($grupoInteres)) {
+            $alerta = [
+                'tipo' => 'warning',
+                'mensaje' => 'Usted no cuenta con el perfil para poder realizar una postulación desde la web.'
+            ];
+        }
+
         if (!$alerta) {
             $valido = true;
         }
@@ -606,41 +613,41 @@ class RepresentanteController extends Controller {
 
     public function consultarCandidatos() {
         if ($this->isAjax()) {
-            if ($this->verificarPermisos(false)) {
+            if (!$this->verificarPermisos(false)) {
                 View::render('control/error403', [], '');
             } else {
                 $modelPostulacion = new Postulacion();
                 $modelVoto = new Voto();
-                
+
                 $grupoInteres = null;
                 $facultad = null;
-                
-                if ( isset($_POST["grupoInteres"]) && isset($_POST["facultad"]) ) {
+
+                if (isset($_POST["grupoInteres"]) && isset($_POST["facultad"])) {
                     $grupoInteres = $_POST["grupoInteres"];
                     $facultad = $_POST["facultad"];
                 }
-                
+
                 $modelPostulacion->setANNIO_ID(date('Y'));
                 $modelPostulacion->setGRUPO_INTERES($grupoInteres);
                 $modelPostulacion->setFACULTAD($facultad);
-                
+
                 $modelVoto->setANNIO_ID(date('Y'));
                 $modelVoto->setVOTANTE(Session::get('usuario')['usuario']);
                 $votosDisponibles = $modelVoto->consultarVotosDisponibles();
-                
+
                 $candidatos = "";
-                
+
                 foreach ($votosDisponibles as $voto) {
-                    if ( $voto->GRUPO_INTERES == $grupoInteres && $voto->POSTULACION_ID && $voto->VOTO_FECHA ) {
+                    if ($voto->GRUPO_INTERES == $grupoInteres && $voto->POSTULACION_ID && $voto->VOTO_FECHA) {
                         $candidatos = "<div class=\"alert alert-danger\">Usted ya utilizó el voto en este grupo de interés.</div>";
                         break;
                     }
                 }
-                
+
                 if (!$candidatos) {
                     $candidatos = $modelPostulacion->consultarCandidatos();
                     echo json_encode($candidatos);
-                }else{
+                } else {
                     echo $candidatos;
                 }
             }
@@ -651,25 +658,25 @@ class RepresentanteController extends Controller {
 
     public function generarVoto() {
         if ($this->isAjax()) {
-            if ($this->verificarPermisos(false)) {
+            if (!$this->verificarPermisos(false)) {
                 View::render('control/error403', [], '');
             } else {
                 $modelVoto = new Voto();
                 $grupoInteres = null;
                 $plancha = null;
-                
-                if ( isset($_POST["grupoInteres"]) && isset($_POST["plancha"]) ) {
+
+                if (isset($_POST["grupoInteres"]) && isset($_POST["plancha"])) {
                     $grupoInteres = $_POST["grupoInteres"];
                     $plancha = $_POST["plancha"];
                 }
-                
+
                 $modelVoto->setANNIO_ID(date('Y'));
                 $modelVoto->setGRUPO_INTERES($grupoInteres);
                 $modelVoto->setPOSTULACION_ID($plancha);
                 $modelVoto->setVOTANTE(Session::get('usuario')['usuario']);
                 $modelVoto->setVOTO_FECHA(date('Y/m/d H:i:s'));
                 $modelVoto->votar();
-                
+
                 echo json_encode($modelVoto->votar());
             }
         } else {
