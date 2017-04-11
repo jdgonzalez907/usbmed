@@ -15,8 +15,8 @@ use Mini\Core\Model;
  *
  * @author ingeniero.analista1
  */
-class AsistenciaCurso extends Model{
-    
+class AsistenciaCurso extends Model {
+
     private $SECUENCIA;
     private $FECHA_ASISTENCIA;
     private $IDENTIFICACION_DOC;
@@ -28,7 +28,7 @@ class AsistenciaCurso extends Model{
     private $USUARIO_ACTUALIZA;
     private $FECHA_ACTUALIZA;
     private $FECHA_OFICIALIZA;
-    
+
     public function getSECUENCIA() {
         return $this->SECUENCIA;
     }
@@ -117,6 +117,19 @@ class AsistenciaCurso extends Model{
         $this->FECHA_OFICIALIZA = $FECHA_OFICIALIZA;
     }
 
+    public function existeFechaAsistencia() {
+        $sql = "select distinct FECHA_ASISTENCIA "
+                . "from con00.TEM_ASISTENCIA_CURSO "
+                . "where TO_CHAR(FECHA_ASISTENCIA, 'DD/MM/YYYY') = :fecha_asistencia";
+        
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':fecha_asistencia' => $this->getFECHA_ASISTENCIA()
+        ];
+        
+        $query->execute($parametros);
+        
+        return $query->fetch();
+    }
 
-    
 }

@@ -71,25 +71,25 @@
         </div>
     </div>
 </div>
-<div class="row presentacion">
+<div class="row presentacion text-center">
     <div class="col-sm-4">
         <h3 class="text-center">Seguridad</h3>
         <img class="img-responsive center-block img-presentacion" src="<?= URL ?>img/computer.png" alt="">        
-        <p class="text-justify">
+        <p >
             La protección de datos es algo sumamente importante, por lo cuál se optó por tecnologías que brinden la seguridad necesaria para mantener la inforamción segura.
         </p>
     </div>
     <div class="col-sm-4">
         <h3 class="text-center">Adaptación</h3>
         <img class="img-responsive center-block img-presentacion" src="<?= URL ?>img/smartphone.png" alt="">        
-        <p class="text-justify">
+        <p >
             Estamos en un mundo donde los smartphone's se usan cada vez más... teniendo en cuenta esto, se diseñó un sistema que se acomode a la pantalla de cualquier dispositivo.
         </p>
     </div>
     <div class="col-sm-4">
         <h3 class="text-center">Sencillez</h3>
         <img class="img-responsive center-block img-presentacion" src="<?= URL ?>img/browser.png" alt="">        
-        <p class="text-justify">
+        <p >
             A nosotros también nos gustan las cosas que nos faciliten la vida, por ello el diseño se basa en un sistema práctico, seguro y amigable.
         </p>
     </div>
