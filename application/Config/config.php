@@ -57,7 +57,7 @@ define('URL', URL_PROTOCOL . URL_DOMAIN . URL_SUB_FOLDER);
  * This is the place where you define your database credentials, database type etc.
  */
 define('DB_TYPE', 'oci');
-define('DB_NAME', '172.16.1.7:1521/sicpro');
+define('DB_NAME', 'rac-scan.usbmed.edu.co:1521/sicpro');
 define('DB_USER', 'aca00');
 define('DB_PASS', 'rpj5asicb');
 define('DB_CHARSET', 'utf8');
