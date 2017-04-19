@@ -541,4 +541,48 @@ class Postulacion extends Model {
         return $query->fetchAll();
     }
 
+    public function consultarTotalVotos() {
+        $sql = "select "
+                . "pos.GRUPO_INTERES GRUPO_INTERES, "
+                . "pos.FACULTAD FACULTAD, "
+                . "pos.POSTULACION_ID POSTULACION_ID, "
+                . "pos.IDENTIFICACION IDENTIFICACION, "
+                . "pos.TIPO_IDENTIFICACION TIPO_IDENTIFICACION, "
+                . "pos.NOMBRES NOMBRES, "
+                . "pos.CORREO CORREO, "
+                . "pos.TELEFONO TELEFONO, "
+                . "pos.FOTO FOTO, "
+                . "count(vot.VOTANTE) TOTAL_VOTOS "
+                . "from mu_rep_postulacion pos "
+                . "inner join mu_rep_voto vot "
+                . "on vot.POSTULACION_ID = pos.POSTULACION_ID "
+                . "where "
+                . "pos.annio_id = :annio_id "
+                . "and pos.ESTADO = :estado "
+                . "group by "
+                . "pos.GRUPO_INTERES, "
+                . "pos.FACULTAD, "
+                . "pos.POSTULACION_ID, "
+                . "pos.IDENTIFICACION, "
+                . "pos.TIPO_IDENTIFICACION, "
+                . "pos.NOMBRES, "
+                . "pos.CORREO, "
+                . "pos.TELEFONO, "
+                . "pos.FOTO "
+                . "order by "
+                . "pos.GRUPO_INTERES asc, "
+                . "pos.FACULTAD asc, "
+                . "count(vot.VOTANTE) desc";
+
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':annio_id' => $this->getANNIO_ID(),
+            ':estado' => $this->getESTADO()
+        ];
+        
+        $query->execute($parametros);
+
+        return $query->fetchAll();
+    }
+
 }

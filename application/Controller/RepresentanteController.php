@@ -727,4 +727,42 @@ class RepresentanteController extends Controller {
         }
     }
 
+    public function reporteFinal($tipo) {
+        $this->verificarPermisos();
+        $postulacion = new Postulacion();
+
+        $postulacion->setANNIO_ID(date('Y'));
+        $postulacion->setESTADO('A');
+
+        $planchas = $postulacion->consultarTotalVotos();
+
+        ob_start();
+        View::render('representante/reporteFinal', ['planchas' => $planchas, 'tipo' => $tipo], []);
+        $html = ob_get_contents();
+        ob_clean();
+
+        $nombreArchivo = 'Reporte_votos_' . date('Y');
+
+        switch ($tipo) {
+            case 'pdf':
+                $mpdf = new mPDF('c', 'A4', 10, '', 15, 15, 30, 10);
+                $mpdf->SetHeader('Univesridad San Buenaventura de Medellín||Elección de representantes ' . date('Y'));
+                $mpdf->setFooter('|{PAGENO}|');
+                $mpdf->WriteHTML($html);
+
+                $mpdf->Output($nombreArchivo . '.pdf', 'D');
+                break;
+
+            case 'excel':
+                header("Content-Encoding: UTF-8");
+                header("Content-type: application/vnd.ms-excel; charset=utf-8");
+                header("Content-Disposition: attachment; filename=$nombreArchivo.xls");
+                echo utf8_decode($html);
+                break;
+
+            default:
+                break;
+        }
+    }
+
 }
