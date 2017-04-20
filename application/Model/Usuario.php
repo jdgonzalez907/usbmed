@@ -180,6 +180,8 @@ class Usuario extends Model {
 
     public static function getMenuPrincipal() {
         $menuPrincipal = [];
+        
+        $sesionMenu = is_array(Session::get('permisos')) ? Session::get('permisos') : [];
 
         $sesionPermisos = (Session::get('permisos')) ? Session::get('permisos') : [];
         
