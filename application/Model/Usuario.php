@@ -180,8 +180,10 @@ class Usuario extends Model {
 
     public static function getMenuPrincipal() {
         $menuPrincipal = [];
+        
+        $sesionMenu = is_array(Session::get('permisos')) ? Session::get('permisos') : [];
 
-        foreach (Session::get('permisos') as $url => $item) {
+        foreach ($sesionMenu as $url => $item) {
             if ($item['TIPO'] === 'C') {
                 $menuPrincipal[] = $item;
             }
