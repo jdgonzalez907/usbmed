@@ -1,2 +1,2 @@
 # Prevent people from looking directly into folders
-Options Indexes
+Options +Indexes
