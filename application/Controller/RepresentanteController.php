@@ -574,7 +574,7 @@ class RepresentanteController extends Controller {
         $facultad = [];
 
         foreach ($info as $i) {
-            if ($i->GRUPO_INTERES !== 'ADM' && $votosValidos[$i->GRUPO_INTERES] === 1) {
+            if ($i->GRUPO_INTERES !== 'ADM' ) {
                 $grupoInteres[$i->GRUPO_INTERES] = ListaGlobal::getGrupoInteres($i->GRUPO_INTERES);
 
                 if ($i->GRUPO_INTERES === 'DOC' && is_numeric($i->FAC_DEP)) {
@@ -591,8 +591,8 @@ class RepresentanteController extends Controller {
 
         if (empty($grupoInteres)) {
             $alerta = [
-                'tipo' => 'warning',
-                'mensaje' => 'Usted no cuenta con el perfil para poder realizar una postulación desde la web.'
+                'tipo' => 'danger',
+                'mensaje' => 'Usted no cuenta con el perfil para poder votar.'
             ];
         }
 
@@ -638,7 +638,7 @@ class RepresentanteController extends Controller {
                 $candidatos = "";
 
                 foreach ($votosDisponibles as $voto) {
-                    if ($voto->GRUPO_INTERES == $grupoInteres && $voto->POSTULACION_ID && $voto->VOTO_FECHA) {
+                    if ($voto->GRUPO_INTERES == $grupoInteres && $voto->POSTULACION_ID !== null && $voto->VOTO_FECHA) {
                         $candidatos = "<div class=\"alert alert-danger\">Usted ya utilizó el voto en este grupo de interés.</div>";
                         break;
                     }

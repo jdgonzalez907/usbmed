@@ -471,6 +471,7 @@ class Postulacion extends Model {
                 . "from "
                 . "MU_REP_POSTULACION "
                 . "where ANNIO_ID = :annio_id "
+                . "and POSTULACION_ID != 0 "
                 . "order by GRUPO_INTERES asc, FACULTAD asc, IDENTIFICACION asc";
 
         $query = $this->db->prepare($sql);

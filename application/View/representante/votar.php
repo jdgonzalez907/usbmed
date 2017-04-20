@@ -137,7 +137,7 @@
                             }else{
                                 $('#listar-candidatos').removeClass();
                                 $('#listar-candidatos').addClass('alert alert-info');
-                                $('#listar-candidatos').html('Para los parámetros seleccionados, no se encuentran planchas disponibles en el momento.<br>Por favor inténtelo más tarde.');
+                                $('#listar-candidatos').html('Para los parámetros seleccionados, no se encuentran planchas disponibles.');
                             }
                         }catch(e){
                             $('#modal_usbmed_title').text('Mensaje del sistema.');
@@ -162,14 +162,14 @@
                         try {
                             var data = JSON.parse(data);
                             if (data===1){
+                                $('#modal_usbmed_title').text('Mensaje del sistema.');
+                                $('#modal_usbmed_body').html('<div class=\"alert alert-success\">Su voto fue registrado correctamente.</div>');
+                                $('#modal_usbmed').modal('show');
                                 setTimeout(
                                     function(){
-                                        $('#modal_usbmed_title').text('Mensaje del sistema.');
-                                        $('#modal_usbmed_body').html('<div class=\"alert alert-success\">Su voto fue registrado correctamente.</div>');
-                                        $('#modal_usbmed').modal('show');
                                         location.reload();
                                     }, 
-                                    500
+                                    1000
                                 );
                             }
                         }catch(e){

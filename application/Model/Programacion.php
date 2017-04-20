@@ -208,7 +208,7 @@ class Programacion extends Model {
         $this->getProgramacionActual();
         $fechaActual = strtotime(date('Y/m/d H:i:s'));
         $alerta = null;
-        
+
         switch ($tipo) {
             case 'INS':
                 
