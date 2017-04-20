@@ -77,7 +77,7 @@ var myLanguageTable = {
 $('#modal_usbmed').modal({
     keyboard: false,
     show: false,
-    backdrop : 'static'
+    backdrop: 'static'
 })
 
 $('#modal_usbmed').on('hide.bs.modal', function (event) {

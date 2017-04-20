@@ -26,7 +26,7 @@
                     <p class="help-block">Seleccione uno para que le envíemos la clave.</p>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok-sign"></span> Recordar</button>
+                    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok-sign"></span> Enviar</button>
                 </div>
             </form>
             <a class="btn btn-default" href="<?= URL . (isset($controlador) ? $controlador : '') . (isset($accion) ? '/' . $accion : '') ?>"><span class="glyphicon glyphicon-circle-arrow-left"></span> Iniciar sesión</a>

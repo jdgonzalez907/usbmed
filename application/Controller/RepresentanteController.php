@@ -240,7 +240,7 @@ class RepresentanteController extends Controller {
                         if (count(ListaGlobal::getFacultades($info->FAC_DEP)) > 1) {
                             continue;
                         }
-                        
+
                         $facultad[$info->GRUPO_INTERES][$info->FAC_DEP] = ListaGlobal::getFacultades($info->FAC_DEP);
                     }
                 }
@@ -397,41 +397,45 @@ class RepresentanteController extends Controller {
     }
 
     public function actualizarPlancha($id) {
-        if (!$this->verificarPermisos(false)) {
-            View::render('control/error403', [], '');
-        } else {
-            $alerta = null;
-            $model = new Postulacion();
-
-            $model->setPOSTULACION_ID($id);
-            if (!$model->getPlancha()) {
-                $alerta = [
-                    'tipo' => 'danger',
-                    'mensaje' => 'La plancha #' . $id . ' no se encuentra en la base de datos.'
-                ];
+        if ($this->isAjax()) {
+            if (!$this->verificarPermisos(false)) {
+                View::render('control/error403', [], '');
             } else {
-                if (isset($_POST["Postulacion"])) {
-                    $model->setESTADO($_POST["Postulacion"]["ESTADO"]);
-                    $model->setOBSERVACIONES($_POST["Postulacion"]["OBSERVACIONES"]);
-                    $model->setUSUARIO_ACTUALIZA(Session::get('usuario')['usuario']);
-                    $model->setFECHA_ACTUALIZA(date('Y/m/d H:i:s'));
+                $alerta = null;
+                $model = new Postulacion();
 
-                    if ($model->update()) {
-                        $model->enviarActualizacionPlancha();
-                        $alerta = [
-                            'tipo' => 'success',
-                            'mensaje' => 'Plancha <strong>actualizada</strong> correctamente. <br><br> Refrescando los datos, espere por favor...'
-                        ];
-                    } else {
-                        $alerta = [
-                            'tipo' => 'danger',
-                            'mensaje' => 'Ocurrió un error, contácte al administrador del sistema.'
-                        ];
+                $model->setPOSTULACION_ID($id);
+                if (!$model->getPlancha()) {
+                    $alerta = [
+                        'tipo' => 'danger',
+                        'mensaje' => 'La plancha #' . $id . ' no se encuentra en la base de datos.'
+                    ];
+                } else {
+                    if (isset($_POST["Postulacion"])) {
+                        $model->setESTADO($_POST["Postulacion"]["ESTADO"]);
+                        $model->setOBSERVACIONES($_POST["Postulacion"]["OBSERVACIONES"]);
+                        $model->setUSUARIO_ACTUALIZA(Session::get('usuario')['usuario']);
+                        $model->setFECHA_ACTUALIZA(date('Y/m/d H:i:s'));
+
+                        if ($model->update()) {
+                            $model->enviarActualizacionPlancha();
+                            $alerta = [
+                                'tipo' => 'success',
+                                'mensaje' => 'Plancha <strong>actualizada</strong> correctamente. <br><br> Refrescando los datos, espere por favor...'
+                            ];
+                        } else {
+                            $alerta = [
+                                'tipo' => 'danger',
+                                'mensaje' => 'Ocurrió un error, contácte al administrador del sistema.'
+                            ];
+                        }
                     }
                 }
-            }
 
-            View::render('representante/actualizarPlancha', ['id' => $id, 'model' => $model, 'alerta' => $alerta], '');
+                View::render('representante/actualizarPlancha', ['id' => $id, 'model' => $model, 'alerta' => $alerta], '');
+            }
+        } else {
+            View::redirect('control/error400');
         }
     }
 
@@ -467,7 +471,7 @@ class RepresentanteController extends Controller {
                         if ($i->GRUPO_INTERES === 'DOC' && is_numeric($i->FAC_DEP)) {
                             $i->FAC_DEP = ListaGlobal::getHomologacionFacultades($i->FAC_DEP);
                         }
-                        
+
                         if (count(ListaGlobal::getFacultades($i->FAC_DEP)) > 1) {
                             continue;
                         }
@@ -536,6 +540,150 @@ class RepresentanteController extends Controller {
         }
     }
 
+    public function votar() {
+        $this->verificarPermisos();
+
+        $modelProgramacion = new Programacion();
+        $alerta = $modelProgramacion->fechaActualEn('VOT');
+        $valido = false;
+        $grupoInteres = [];
+        $facultad = [];
+
+        $modelVoto = new Voto();
+        $modelVoto->setANNIO_ID(date('Y'));
+        $modelVoto->setVOTANTE(Session::get('usuario')['usuario']);
+        $votosDisponibles = $modelVoto->consultarVotosDisponibles();
+        $votosValidos = [
+            'DOC' => 'NA',
+            'EST' => 'NA',
+            'EGR' => 'NA'
+        ];
+
+        foreach ($votosDisponibles as $voto) {
+            if (!$voto->VOTO_FECHA && !$voto->POSTULACION_ID) {
+                $votosValidos[$voto->GRUPO_INTERES] = 1;
+            } else {
+                $votosValidos[$voto->GRUPO_INTERES] = 'Utilizado';
+            }
+        }
+
+        $usuario = new Usuario();
+        $usuario->setCEDULA(Session::get('usuario')['usuario']);
+        $info = $usuario->getInfoPorCedula();
+        $grupoInteres = [];
+        $facultad = [];
+
+        foreach ($info as $i) {
+            if ($i->GRUPO_INTERES !== 'ADM' && $votosValidos[$i->GRUPO_INTERES] === 1) {
+                $grupoInteres[$i->GRUPO_INTERES] = ListaGlobal::getGrupoInteres($i->GRUPO_INTERES);
+
+                if ($i->GRUPO_INTERES === 'DOC' && is_numeric($i->FAC_DEP)) {
+                    $i->FAC_DEP = ListaGlobal::getHomologacionFacultades($i->FAC_DEP);
+                }
+
+                if (count(ListaGlobal::getFacultades($i->FAC_DEP)) > 1) {
+                    continue;
+                }
+
+                $facultad[$i->GRUPO_INTERES][$i->FAC_DEP] = ListaGlobal::getFacultades($i->FAC_DEP);
+            }
+        }
+
+        if (empty($grupoInteres)) {
+            $alerta = [
+                'tipo' => 'warning',
+                'mensaje' => 'Usted no cuenta con el perfil para poder realizar una postulación desde la web.'
+            ];
+        }
+
+        if (!$alerta) {
+            $valido = true;
+        }
+
+        View::render(
+                'representante/votar', [
+            'alerta' => $alerta,
+            'valido' => $valido,
+            'votosValidos' => $votosValidos,
+            'grupoInteres' => $grupoInteres,
+            'facultad' => $facultad
+                ]
+        );
+    }
+
+    public function consultarCandidatos() {
+        if ($this->isAjax()) {
+            if (!$this->verificarPermisos(false)) {
+                View::render('control/error403', [], '');
+            } else {
+                $modelPostulacion = new Postulacion();
+                $modelVoto = new Voto();
+
+                $grupoInteres = null;
+                $facultad = null;
+
+                if (isset($_POST["grupoInteres"]) && isset($_POST["facultad"])) {
+                    $grupoInteres = $_POST["grupoInteres"];
+                    $facultad = $_POST["facultad"];
+                }
+
+                $modelPostulacion->setANNIO_ID(date('Y'));
+                $modelPostulacion->setGRUPO_INTERES($grupoInteres);
+                $modelPostulacion->setFACULTAD($facultad);
+
+                $modelVoto->setANNIO_ID(date('Y'));
+                $modelVoto->setVOTANTE(Session::get('usuario')['usuario']);
+                $votosDisponibles = $modelVoto->consultarVotosDisponibles();
+
+                $candidatos = "";
+
+                foreach ($votosDisponibles as $voto) {
+                    if ($voto->GRUPO_INTERES == $grupoInteres && $voto->POSTULACION_ID && $voto->VOTO_FECHA) {
+                        $candidatos = "<div class=\"alert alert-danger\">Usted ya utilizó el voto en este grupo de interés.</div>";
+                        break;
+                    }
+                }
+
+                if (!$candidatos) {
+                    $candidatos = $modelPostulacion->consultarCandidatos();
+                    echo json_encode($candidatos);
+                } else {
+                    echo $candidatos;
+                }
+            }
+        } else {
+            View::redirect('control/error400');
+        }
+    }
+
+    public function generarVoto() {
+        if ($this->isAjax()) {
+            if (!$this->verificarPermisos(false)) {
+                View::render('control/error403', [], '');
+            } else {
+                $modelVoto = new Voto();
+                $grupoInteres = null;
+                $plancha = null;
+
+                if (isset($_POST["grupoInteres"]) && isset($_POST["plancha"])) {
+                    $grupoInteres = $_POST["grupoInteres"];
+                    $plancha = $_POST["plancha"];
+                }
+
+                $modelVoto->setANNIO_ID(date('Y'));
+                $modelVoto->setGRUPO_INTERES($grupoInteres);
+                $modelVoto->setPOSTULACION_ID($plancha);
+                $modelVoto->setVOTANTE(Session::get('usuario')['usuario']);
+                $modelVoto->setVOTO_FECHA(date('Y/m/d H:i:s'));
+                $modelVoto->votar();
+
+                echo json_encode($modelVoto->votar());
+            }
+        } else {
+            View::redirect('control/error400');
+        }
+    }
+
     public function reportes() {
         $this->verificarPermisos();
 
@@ -564,7 +712,7 @@ class RepresentanteController extends Controller {
                 $mpdf->setFooter('|{PAGENO}|');
                 $mpdf->WriteHTML($html);
 
-                $mpdf->Output($nombreArchivo.'.pdf', 'D');
+                $mpdf->Output($nombreArchivo . '.pdf', 'D');
                 break;
 
             case 'excel':

@@ -183,7 +183,9 @@ class Usuario extends Model {
         
         $sesionMenu = is_array(Session::get('permisos')) ? Session::get('permisos') : [];
 
-        foreach ($sesionMenu as $url => $item) {
+        $sesionPermisos = (Session::get('permisos')) ? Session::get('permisos') : [];
+        
+        foreach ($sesionPermisos as $url => $item) {
             if ($item['TIPO'] === 'C') {
                 $menuPrincipal[] = $item;
             }
@@ -194,10 +196,12 @@ class Usuario extends Model {
 
     public static function getMenuPermisos() {
         $menuPermisos = [];
-
-        foreach (Session::get('permisos') as $url => $item) {
+        
+        $sesionPermisos = (Session::get('permisos')) ? Session::get('permisos') : [];
+        
+        foreach ($sesionPermisos as $url => $item) {
             $controlador = explode('/', \Mini\Core\Application::$url_id)[0];
-
+            
             if (strpos($item['URL'], $controlador) === 0 && !is_null($item['ORDEN'])) {
                 $menuPermisos[] = $item;
             }

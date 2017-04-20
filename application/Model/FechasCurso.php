@@ -15,10 +15,10 @@ use Mini\Core\Model;
  *
  * @author ingeniero.analista1
  */
-class FechasCurso extends Model{
-    
+class FechasCurso extends Model {
+
     const _CURSO_ASCENSO_REUBICACION_ = [803, 804];
-    
+
     private $COD_CURSO;
     private $CONSECUTIVO;
     private $FECH_INI_CURSO;
@@ -34,7 +34,7 @@ class FechasCurso extends Model{
     private $GRUPO_ICE;
     private $PERIODO_ICE;
     private $MESES_ICE;
-    
+
     public function getCOD_CURSO() {
         return $this->COD_CURSO;
     }
@@ -154,25 +154,47 @@ class FechasCurso extends Model{
     public function setMESES_ICE($MESES_ICE) {
         $this->MESES_ICE = $MESES_ICE;
     }
-    
-    public function consecutivosAsociados()
-    {
+
+    public function consecutivosAsociados() {
         $sql = "select "
                 . "* "
                 . "from "
                 . "CON00.TER_FECHAS_CURSO "
-                . "where COD_CURSO in :curso "
-                . "and CEDULA_PROFESOR = :cedula_profesor";
-        
+                . "where COD_CURSO in (" . implode(',', self::_CURSO_ASCENSO_REUBICACION_) . ") "
+                . "and CEDULA_PROFESOR = :cedula_profesor "
+        ;
+
         $query = $this->db->prepare($sql);
         $parametros = [
-            ':curso' => self::_CURSO_ASCENSO_REUBICACION_,
             ':cedula_profesor' => $this->getCEDULA_PROFESOR()
         ];
-        \Mini\Libs\VarDump::dump($query);
+
         $query->execute($parametros);
-        \Mini\Libs\VarDump::dump($query);exit;
+
         return $query->fetchAll();
     }
-    
+
+    public function consultarFechas() {
+        $sql = "select "
+                . "distinct asisC.FECHA_ASISTENCIA FECHA_ASISTENCIA "
+                . "from "
+                . "CON00.TER_FECHAS_CURSO fechaC "
+                . "inner join CON00.TEM_ASISTENCIA_CURSO asisC "
+                . "on fechaC.CONSECUTIVO = asisC.CONSECUTIVO "
+                . "where fechaC.COD_CURSO in (" . implode(',', self::_CURSO_ASCENSO_REUBICACION_) . ") "
+                . "and fechaC.CEDULA_PROFESOR = :cedula_profesor "
+                . "and fechaC.CONSECUTIVO = :consecutivo"
+        ;
+
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':cedula_profesor' => $this->getCEDULA_PROFESOR(),
+            ':consecutivo' => $this->getCONSECUTIVO()
+        ];
+
+        $query->execute($parametros);
+
+        return $query->fetchAll();
+    }
+
 }

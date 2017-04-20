@@ -488,7 +488,7 @@ class Postulacion extends Model {
         $cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
         $cabeceras .= 'From: Universidad San Buenaventura de Medellin<usbmed@usbmed.edu.co>';
 
-        $titulo = "Actualización a la plancha #".$this->getPOSTULACION_ID()." - Universidad San Buenaventura de Medellín";
+        $titulo = "Actualización a la plancha #" . $this->getPOSTULACION_ID() . " - Universidad San Buenaventura de Medellín";
         $para = $this->getCORREO();
 
         ob_start();
@@ -502,8 +502,43 @@ class Postulacion extends Model {
         $mensaje = str_replace('{_ESTADO_}', ListaGlobal::getEstados($this->getESTADO()), $mensaje);
 
         $enviado = mail($para, $titulo, $mensaje, $cabeceras);
-        
+
         return $enviado;
+    }
+
+    public function consultarCandidatos() {
+        $sql = "select "
+                . "POSTULACION_ID, "
+                . "ANNIO_ID, "
+                . "GRUPO_INTERES, "
+                . "FACULTAD, "
+                . "TIPO_IDENTIFICACION, "
+                . "IDENTIFICACION, "
+                . "NOMBRES, "
+                . "CORREO, "
+                . "TELEFONO, "
+                . "ESTADO, "
+                . "FOTO, "
+                . "OBSERVACIONES, "
+                . "USUARIO_ACTUALIZA, "
+                . "TO_CHAR(FECHA_ACTUALIZA , 'YYYY/MM/DD HH24:MI:SS') FECHA_ACTUALIZA, "
+                . "TO_CHAR(FECHA_POSTULACION , 'YYYY/MM/DD HH24:MI:SS') FECHA_POSTULACION "
+                . "from "
+                . "(SELECT * FROM   MU_REP_POSTULACION ORDER BY DBMS_RANDOM.RANDOM) "
+                . "where ANNIO_ID = :annio_id "
+                . "and FACULTAD = :facultad "
+                . "and GRUPO_INTERES = :grupo_interes ";
+
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':annio_id' => $this->getANNIO_ID(),
+            ':grupo_interes' => $this->getGRUPO_INTERES(),
+            ':facultad' => $this->getFACULTAD()
+        ];
+        
+        $query->execute($parametros);
+
+        return $query->fetchAll();
     }
 
 }

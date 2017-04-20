@@ -99,8 +99,7 @@ class Voto extends Model {
         $this->GRUPO_INTERES = $GRUPO_INTERES;
     }
 
-    public function insert()
-    {
+    public function insert() {
         $sql = "INSERT INTO mu_rep_voto "
                 . "VALUES ("
                 . ":annio_id, "
@@ -113,7 +112,7 @@ class Voto extends Model {
                 . ":voto_fecha, "
                 . ":grupo_interes"
                 . ")";
-        
+
         $query = $this->db->prepare($sql);
         $parametros = [
             ":annio_id" => $this->getANNIO_ID(),
@@ -126,14 +125,13 @@ class Voto extends Model {
             ":voto_fecha" => $this->getVOTO_FECHA(),
             ":grupo_interes" => $this->getGRUPO_INTERES(),
         ];
-        
+
         $query->execute($parametros);
-        
+
         return $query->rowCount();
     }
-    
-    public function getUnico()
-    {
+
+    public function getUnico() {
         $sql = "select "
                 . "ANNIO_ID, "
                 . "VOTANTE, "
@@ -148,16 +146,57 @@ class Voto extends Model {
                 . "where ANNIO_ID = :annio_id "
                 . "and VOTANTE = :votante "
                 . "and GRUPO_INTERES = :grupo_interes";
-        
+
         $query = $this->db->prepare($sql);
         $parametros = [
             ":annio_id" => $this->getANNIO_ID(),
             ":votante" => $this->getVOTANTE(),
             ":grupo_interes" => $this->getGRUPO_INTERES()
         ];
-        
+
         $query->execute($parametros);
-        
+
         return $query->fetch();
     }
+
+    public function consultarVotosDisponibles() {
+        $sql = "select "
+                . "*"
+                . "from MU_REP_VOTO "
+                . "where ANNIO_ID = :annio_id "
+                . "and VOTANTE = :votante";
+
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ":annio_id" => $this->getANNIO_ID(),
+            ":votante" => $this->getVOTANTE()
+        ];
+
+        $query->execute($parametros);
+
+        return $query->fetchAll();
+    }
+    
+    public function votar() {
+        $sql = "update MU_REP_VOTO set "
+                . "POSTULACION_ID = :postulacion_id, "
+                . "VOTO_FECHA = TO_DATE(:voto_fecha , 'YYYY/MM/DD HH24:MI:SS') "
+                . "where "
+                . "ANNIO_ID = :annio_id "
+                . "and VOTANTE = :votante "
+                . "and GRUPO_INTERES = :grupo_interes";
+
+        $query = $this->db->prepare($sql);
+        $parametros = [
+            ':annio_id' => $this->getANNIO_ID(),
+            ':votante' =>$this->getVOTANTE(),
+            ':postulacion_id' => $this->getPOSTULACION_ID(),
+            ':voto_fecha' => $this->getVOTO_FECHA(),
+            ':grupo_interes' => $this->getGRUPO_INTERES()
+        ];
+        $query->execute($parametros);
+
+        return $query->rowCount();
+    }
+
 }
