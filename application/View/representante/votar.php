@@ -115,18 +115,18 @@
                                     urlFOTO = urlFOTO.substring(1);
                                     
                                     html += '<div class=\"col-sm-4\">';
-                                    html += '<button type=\"button\" class=\"thumbnail center-block\" onclick=\"votar('+data[i].POSTULACION_ID+')\">';
+                                    html += '<button type=\"button\" class=\"thumbnail center-block plancha\" onclick=\"votar('+data[i].POSTULACION_ID+')\">';
                                     html += '<p class=\"text-center\">'+data[i].POSTULACION_ID+'</p>';
-                                    html += '<img class=\"img-responsive center-block previewFoto\" src=\"".URL."'+ urlFOTO +'\" alt=\"'+ data[i].NOMBRES +'\">';
+                                    html += '<img class=\"center-block previewFoto\" src=\"".URL."'+ urlFOTO +'\" alt=\"'+ data[i].NOMBRES +'\">';
                                     html += '<p class=\"text-center\">'+data[i].NOMBRES+'</p>';
                                     html += '</button>';
                                     html += '</div>';
                                 }
                                 
                                 html += '<div class=\"col-sm-4 text-center\">';
-                                html += '<button type=\"button center-block\" class=\"thumbnail\" onclick=\"votar(0)\">';
+                                html += '<button type=\"button\" class=\"thumbnail center-block plancha\" onclick=\"votar(0)\">';
                                 html += '<p></p>';
-                                html += '<p class=\"previewFoto\"></p>';
+                                html += '<img class=\"center-block previewFoto\" src=\"". URL ."img/blanco.jpg\">';
                                 html += '<p class=\"text-center\">VOTO EN BLANCO</p>';
                                 html += '</button>';
                                 html += '</div>';

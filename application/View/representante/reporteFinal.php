@@ -4,6 +4,7 @@ use Mini\Model\ListaGlobal;
 
 $grupoInteres = null;
 $facultad = null;
+
 ?>
 
 <style>
@@ -121,3 +122,4 @@ $facultad = null;
         </tbody>
     <?php endforeach; ?>
 </table>
+<?php exit; ?>

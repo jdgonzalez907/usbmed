@@ -29,8 +29,11 @@ class RepresentanteController extends Controller {
 
     public function index() {
         $this->verificarPermisos();
+        
+        $programacion = new Programacion();
+        $programacion->getProgramacionActual();
 
-        View::render('representante/index');
+        View::render('representante/index', ['programacion' => $programacion]);
     }
 
     public function programacion() {
@@ -552,6 +555,7 @@ class RepresentanteController extends Controller {
         $modelVoto = new Voto();
         $modelVoto->setANNIO_ID(date('Y'));
         $modelVoto->setVOTANTE(Session::get('usuario')['usuario']);
+        $modelVoto->setESTADO('A');
         $votosDisponibles = $modelVoto->consultarVotosDisponibles();
         $votosValidos = [
             'DOC' => 'NA',
@@ -574,7 +578,7 @@ class RepresentanteController extends Controller {
         $facultad = [];
 
         foreach ($info as $i) {
-            if ($i->GRUPO_INTERES !== 'ADM' ) {
+            if ($i->GRUPO_INTERES !== 'ADM' && $votosValidos[$i->GRUPO_INTERES] === 1) {
                 $grupoInteres[$i->GRUPO_INTERES] = ListaGlobal::getGrupoInteres($i->GRUPO_INTERES);
 
                 if ($i->GRUPO_INTERES === 'DOC' && is_numeric($i->FAC_DEP)) {
@@ -591,8 +595,8 @@ class RepresentanteController extends Controller {
 
         if (empty($grupoInteres)) {
             $alerta = [
-                'tipo' => 'danger',
-                'mensaje' => 'Usted no cuenta con el perfil para poder votar.'
+                'tipo' => 'info',
+                'mensaje' => 'Usted no cuenta con votos disponibles para votar.'
             ];
         }
 
@@ -630,9 +634,11 @@ class RepresentanteController extends Controller {
                 $modelPostulacion->setANNIO_ID(date('Y'));
                 $modelPostulacion->setGRUPO_INTERES($grupoInteres);
                 $modelPostulacion->setFACULTAD($facultad);
+                $modelPostulacion->setESTADO('A');
 
                 $modelVoto->setANNIO_ID(date('Y'));
                 $modelVoto->setVOTANTE(Session::get('usuario')['usuario']);
+                $modelVoto->setESTADO('A');
                 $votosDisponibles = $modelVoto->consultarVotosDisponibles();
 
                 $candidatos = "";

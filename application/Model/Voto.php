@@ -164,12 +164,14 @@ class Voto extends Model {
                 . "*"
                 . "from MU_REP_VOTO "
                 . "where ANNIO_ID = :annio_id "
-                . "and VOTANTE = :votante";
+                . "and VOTANTE = :votante "
+                . "and ESTADO = :estado";
 
         $query = $this->db->prepare($sql);
         $parametros = [
             ":annio_id" => $this->getANNIO_ID(),
-            ":votante" => $this->getVOTANTE()
+            ":votante" => $this->getVOTANTE(),
+            ':estado' => $this->getESTADO()
         ];
 
         $query->execute($parametros);

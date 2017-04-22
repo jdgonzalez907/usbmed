@@ -54,13 +54,18 @@ body {
 }
 
 #previewFoto {
-    height: 200px;
+    height: 200px !important;
     width: 150px;
 }
 
 .previewFoto {
-    height: 200px;
+    height: 200px !important;
     width: 150px;
+}
+
+.plancha {
+    height: 285px !important;
+    width: 190px !important;
 }
 
 .form-control {

@@ -528,13 +528,15 @@ class Postulacion extends Model {
                 . "(SELECT * FROM   MU_REP_POSTULACION ORDER BY DBMS_RANDOM.RANDOM) "
                 . "where ANNIO_ID = :annio_id "
                 . "and FACULTAD = :facultad "
-                . "and GRUPO_INTERES = :grupo_interes ";
+                . "and GRUPO_INTERES = :grupo_interes "
+                . "and ESTADO = :estado";
 
         $query = $this->db->prepare($sql);
         $parametros = [
             ':annio_id' => $this->getANNIO_ID(),
             ':grupo_interes' => $this->getGRUPO_INTERES(),
-            ':facultad' => $this->getFACULTAD()
+            ':facultad' => $this->getFACULTAD(),
+            ':estado' => $this->getESTADO()
         ];
         
         $query->execute($parametros);
