@@ -24,7 +24,7 @@ class DerechoGradosController extends Controller {
         $alerta = [
             'tipo' => 'info',
             'mensaje' => '- Su información debe ser tal cuál cómo aparece en el documento. <br>'
-                        . '- La foto debe ser fondo azul. '
+            . '- La foto debe ser fondo azul. '
         ];
 
         if (isset($_POST["btnEnviar"])) {
@@ -32,7 +32,7 @@ class DerechoGradosController extends Controller {
             $modeloEstudiante->setTIPO_IDENTIFICACION($_POST["sltTIPO"]);
             $modeloEstudiante->setIDENTIFICACION($_POST["txtID"]);
             $modeloEstudiante->setID_ESTUDIO($_POST["sltPROGRAMA"]);
-            
+
             if (!$modeloEstudiante->consultarLlavePrimaria()) {
                 $modeloEstudiante->setNOMBRES($_POST["txtNOMBRE"]);
                 $modeloEstudiante->setAPELLIDOS($_POST["txtAPELLIDO"]);
@@ -58,8 +58,7 @@ class DerechoGradosController extends Controller {
                 $rutaServidor = ROOT
                         . URL_PUBLIC_FOLDER
                         . $carpeta
-                        . $modeloEstudiante->getIDENTIFICACION()
-                        . '(' . $modeloEstudiante->getTIPO_IDENTIFICACION() . ')'
+                        . '\\fotos'
                         . "\\";
 
                 if (!is_dir($rutaServidor)) {
@@ -70,8 +69,7 @@ class DerechoGradosController extends Controller {
                     $rutaUrl = URL
                             . URL_PUBLIC_FOLDER
                             . str_replace("\\", "/", $carpeta)
-                            . $modeloEstudiante->getIDENTIFICACION()
-                            . '(' . $modeloEstudiante->getTIPO_IDENTIFICACION() . ')'
+                            . '/fotos'
                             . "/"
                             . $nombre;
 
@@ -90,8 +88,7 @@ class DerechoGradosController extends Controller {
                 $rutaServidor = ROOT
                         . URL_PUBLIC_FOLDER
                         . $carpeta
-                        . $modeloEstudiante->getIDENTIFICACION()
-                        . '(' . $modeloEstudiante->getTIPO_IDENTIFICACION() . ')'
+                        . '\\pruebasSaber'
                         . "\\";
 
                 if (!is_dir($rutaServidor)) {
@@ -102,8 +99,7 @@ class DerechoGradosController extends Controller {
                     $rutaUrl = URL
                             . URL_PUBLIC_FOLDER
                             . str_replace("\\", "/", $carpeta)
-                            . $modeloEstudiante->getIDENTIFICACION()
-                            . '(' . $modeloEstudiante->getTIPO_IDENTIFICACION() . ')'
+                            . '/pruebasSaber'
                             . "/"
                             . $nombre;
 
@@ -122,8 +118,7 @@ class DerechoGradosController extends Controller {
                 $rutaServidor = ROOT
                         . URL_PUBLIC_FOLDER
                         . $carpeta
-                        . $modeloEstudiante->getIDENTIFICACION()
-                        . '(' . $modeloEstudiante->getTIPO_IDENTIFICACION() . ')'
+                        . '\\documentos'
                         . "\\";
 
                 if (!is_dir($rutaServidor)) {
@@ -134,8 +129,7 @@ class DerechoGradosController extends Controller {
                     $rutaUrl = URL
                             . URL_PUBLIC_FOLDER
                             . str_replace("\\", "/", $carpeta)
-                            . $modeloEstudiante->getIDENTIFICACION()
-                            . '(' . $modeloEstudiante->getTIPO_IDENTIFICACION() . ')'
+                            . '/documentos'
                             . "/"
                             . $nombre;
 
