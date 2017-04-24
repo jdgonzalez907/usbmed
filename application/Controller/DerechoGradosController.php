@@ -58,7 +58,7 @@ class DerechoGradosController extends Controller {
                 $rutaServidor = ROOT
                         . URL_PUBLIC_FOLDER
                         . $carpeta
-                        . '\\fotos'
+                        . '\fotos'
                         . "\\";
 
                 if (!is_dir($rutaServidor)) {
@@ -88,7 +88,7 @@ class DerechoGradosController extends Controller {
                 $rutaServidor = ROOT
                         . URL_PUBLIC_FOLDER
                         . $carpeta
-                        . '\\pruebasSaber'
+                        . '\pruebasSaber'
                         . "\\";
 
                 if (!is_dir($rutaServidor)) {
@@ -118,7 +118,7 @@ class DerechoGradosController extends Controller {
                 $rutaServidor = ROOT
                         . URL_PUBLIC_FOLDER
                         . $carpeta
-                        . '\\documentos'
+                        . '\documentos'
                         . "\\";
 
                 if (!is_dir($rutaServidor)) {
