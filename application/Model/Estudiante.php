@@ -28,6 +28,7 @@ class Estudiante extends Model {
     private $ARCHIVO_FOTO;
     private $ARCHIVO_PRUEBA;
     private $ARCHIVO_DOCUMENTO;
+    private $FECHA_REGISTRO;
 
     function getTIPO_IDENTIFICACION() {
         return $this->TIPO_IDENTIFICACION;
@@ -71,6 +72,10 @@ class Estudiante extends Model {
 
     function getARCHIVO_DOCUMENTO() {
         return $this->ARCHIVO_DOCUMENTO;
+    }
+
+    function getFECHA_REGISTRO() {
+        return $this->FECHA_REGISTRO;
     }
 
     function setTIPO_IDENTIFICACION($TIPO_IDENTIFICACION) {
@@ -117,6 +122,10 @@ class Estudiante extends Model {
         $this->ARCHIVO_DOCUMENTO = $ARCHIVO_DOCUMENTO;
     }
 
+    function setFECHA_REGISTRO($FECHA_REGISTRO) {
+        $this->FECHA_REGISTRO = $FECHA_REGISTRO;
+    }
+
     public function insert() {
         $sql = "insert into MU_GRA_ESTUDIANTE ( "
                 . "TIPO_IDENTIFICACION, "
@@ -129,7 +138,8 @@ class Estudiante extends Model {
                 . "ID_ESTUDIO, "
                 . "ARCHIVO_FOTO, "
                 . "ARCHIVO_PRUEBA, "
-                . "ARCHIVO_DOCUMENTO "
+                . "ARCHIVO_DOCUMENTO, "
+                . "FECHA_REGISTRO "
                 . ") values ( "
                 . ":tipo_identificacion, "
                 . ":identificacion, "
@@ -141,7 +151,8 @@ class Estudiante extends Model {
                 . ":id_estudio, "
                 . ":archivo_foto, "
                 . ":archivo_prueba, "
-                . ":archivo_documento "
+                . ":archivo_documento, "
+                . "TO_DATE(:fecha_registro, 'YYYY/MM/DD HH24:MI:SS') "
                 . ") ";
 
         $query = $this->db->prepare($sql);
@@ -158,6 +169,7 @@ class Estudiante extends Model {
             ':archivo_foto' => $this->getARCHIVO_FOTO(),
             ':archivo_prueba' => $this->getARCHIVO_PRUEBA(),
             ':archivo_documento' => $this->getARCHIVO_DOCUMENTO(),
+            ':fecha_registro' => $this->getFECHA_REGISTRO()
         ];
 
         $query->execute($parametros);

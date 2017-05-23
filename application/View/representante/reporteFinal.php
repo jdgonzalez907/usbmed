@@ -4,6 +4,7 @@ use Mini\Model\ListaGlobal;
 
 $grupoInteres = null;
 $facultad = null;
+$cambioGrupo = true;
 
 ?>
 
@@ -88,10 +89,13 @@ $facultad = null;
             }else {
                 if (is_null($grupoInteres) || $grupoInteres !== $p->GRUPO_INTERES) {
                     $grupoInteres = $p->GRUPO_INTERES;
+                    $cambioGrupo = true;
                     echo '<tr style="background-color:#999999;"><th class="th" colspan="' . (($tipo !== 'excel') ? '7' : '6') . '"><h2>' . ListaGlobal::getGrupoInteres($grupoInteres) . '</h2></th></td>';
+                }else{
+                    $cambioGrupo = false;
                 }
 
-                if (is_null($facultad) || $facultad !== $p->FACULTAD) {
+                if (is_null($facultad) || $facultad !== $p->FACULTAD || $cambioGrupo) {
                     $facultad = $p->FACULTAD;
                     echo '<tr style="background-color:#c9c9c9;"><th class="th" colspan="' . (($tipo !== 'excel') ? '7' : '6') . '"><h3>' . ListaGlobal::getFacultades($facultad) . '</h3></th></td>';
                     echo 
@@ -117,9 +121,8 @@ $facultad = null;
                 <td class="td"><?= $p->CORREO ?></td>
                 <td class="td"><?= $p->TELEFONO ?></td>
                 <?php if ($tipo !== 'excel'): ?><td class="td foto"><img class="foto-resize" src="<?= URL . $p->FOTO ?>"></td><?php endif; ?>
-                <td class="td votos"><?= $p->TOTAL_VOTOS ?></td>
+                <td class="td"><?= $p->TOTAL_VOTOS ?></td>
             </tr>
         </tbody>
     <?php endforeach; ?>
 </table>
-<?php exit; ?>

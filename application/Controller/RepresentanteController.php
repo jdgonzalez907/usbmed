@@ -543,11 +543,11 @@ class RepresentanteController extends Controller {
         }
     }
 
-    public function votar() {
+    public function votar($prueba = null) {
         $this->verificarPermisos();
 
         $modelProgramacion = new Programacion();
-        $alerta = $modelProgramacion->fechaActualEn('VOT');
+        $alerta = ($prueba) ? null : $modelProgramacion->fechaActualEn('VOT') ;
         $valido = false;
         $grupoInteres = [];
         $facultad = [];

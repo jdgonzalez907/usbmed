@@ -31,7 +31,7 @@
         </div>
     </div>
 </div>
-<hr>
+<hr
 <?php if ($valido): ?>
         <h3>Para votar siga los siguientes pasos:</h3>
     <div class="row" id="consultar-grupo-interes">

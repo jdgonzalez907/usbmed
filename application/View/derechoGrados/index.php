@@ -96,7 +96,7 @@
                             <div class="form-group">
                                 <label for="flPRUEBA" class="col-sm-4 control-label">Prueba saber</label>
                                 <div class="col-sm-8">
-                                    <input type="file" class="form-control" id="flPRUEBA" name="flPRUEBA" data-validation="required, mime, size" data-validation-allowing="jpg, png" data-validation-max-size="10M">
+                                    <input type="file" class="form-control" id="flPRUEBA" name="flPRUEBA" data-validation="required, mime, size" data-validation-allowing="jpg, png, pdf" data-validation-max-size="10M">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -108,7 +108,7 @@
                             <div class="form-group">
                                 <label for="flDOCUMENTO" class="col-sm-4 control-label">Documento al 150%</label>
                                 <div class="col-sm-8">
-                                    <input type="file" class="form-control" id="flDOCUMENTO" name="flDOCUMENTO" data-validation="required, mime, size" data-validation-allowing="jpg, png" data-validation-max-size="10M">
+                                    <input type="file" class="form-control" id="flDOCUMENTO" name="flDOCUMENTO" data-validation="required, mime, size" data-validation-allowing="jpg, png, pdf" data-validation-max-size="10M">
                                 </div>
                             </div>
                         </div>
@@ -148,7 +148,7 @@ self::registerJs("
                 var data = JSON.parse(data);
                 
                 for (var i = 0; i < data.length; i++) {
-                    html += '<option value=\"'+data[i].ID_ESTUDIO+'\">'+data[i].DESCRIPCION+'</option>';
+                    html += '<option value=\"'+data[i].ID_ESTUDIO+'\">'+data[i].ID_ESTUDIO+' - '+data[i].DESCRIPCION+'</option>';
                 }
                 
                 $('#sltPROGRAMA').html(html);

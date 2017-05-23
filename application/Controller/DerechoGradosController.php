@@ -39,6 +39,7 @@ class DerechoGradosController extends Controller {
                 $modeloEstudiante->setCORREO($_POST["txtCORREO"]);
                 $modeloEstudiante->setCELULAR($_POST["txtTELEFONO"]);
                 $modeloEstudiante->setCODIGO($_POST["txtCODIGO"]);
+                $modeloEstudiante->setFECHA_REGISTRO(date('Y/m/d H:i:s'));
 
                 $carpeta = "\\documentos\\";
                 $rutaServidor = "";
