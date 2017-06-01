@@ -16,6 +16,8 @@ use Mini\Core\Model;
  * @author ingeniero.analista1
  */
 class FechasCurso extends Model {
+    
+    protected $conexion = "con00";
 
     const _CURSO_ASCENSO_REUBICACION_ = [803, 804];
 
@@ -159,7 +161,7 @@ class FechasCurso extends Model {
         $sql = "select "
                 . "* "
                 . "from "
-                . "CON00.TER_FECHAS_CURSO "
+                . "TER_FECHAS_CURSO "
                 . "where COD_CURSO in (" . implode(',', self::_CURSO_ASCENSO_REUBICACION_) . ") "
                 . "and CEDULA_PROFESOR = :cedula_profesor "
         ;
@@ -176,14 +178,17 @@ class FechasCurso extends Model {
 
     public function consultarFechas() {
         $sql = "select "
-                . "distinct asisC.FECHA_ASISTENCIA FECHA_ASISTENCIA "
+                . "distinct asisC.CONSECUTIVO CONSECUTIVO, "
+                . "TO_CHAR(asisC.FECHA_ASISTENCIA, 'DD/MM/YYYY') FECHA_ASISTENCIA, "
+                . "TO_CHAR(asisC.FECHA_OFICIALIZA, 'DD/MM/YYYY') FECHA_OFICIALIZA "
                 . "from "
-                . "CON00.TER_FECHAS_CURSO fechaC "
-                . "inner join CON00.TEM_ASISTENCIA_CURSO asisC "
+                . "TER_FECHAS_CURSO fechaC "
+                . "inner join TEM_ASISTENCIA_CURSO asisC "
                 . "on fechaC.CONSECUTIVO = asisC.CONSECUTIVO "
                 . "where fechaC.COD_CURSO in (" . implode(',', self::_CURSO_ASCENSO_REUBICACION_) . ") "
                 . "and fechaC.CEDULA_PROFESOR = :cedula_profesor "
-                . "and fechaC.CONSECUTIVO = :consecutivo"
+                . "and fechaC.CONSECUTIVO = :consecutivo "
+                . "order by FECHA_ASISTENCIA desc"
         ;
 
         $query = $this->db->prepare($sql);

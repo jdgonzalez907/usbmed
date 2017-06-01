@@ -9,7 +9,25 @@ class Model
     /**
      * @var null Database Connection
      */
-    public $db = null;
+    protected $db = null;
+    protected $conexion = "aca00";
+
+    protected $DB_CONFIG = [
+        "aca00" => [
+            'DB_TYPE' => 'oci',
+            'DB_NAME' => 'rac-scan.usbmed.edu.co:1521/sicpro',
+            'DB_USER' => 'aca00',
+            'DB_PASS' => 'rpj5asicb',
+            'DB_CHARSET' => 'utf8'
+        ],
+        "con00" => [
+            'DB_TYPE' => 'oci',
+            'DB_NAME' => 'rac-scan.usbmed.edu.co:1521/sicpro',
+            'DB_USER' => 'con00',
+            'DB_PASS' => 'tybFisiR12',
+            'DB_CHARSET' => 'utf8'
+        ],
+    ];
 
     /**
      * Whenever model is created, open a database connection.
@@ -37,6 +55,6 @@ class Model
         // generate a database connection, using the PDO connector
         // @see http://net.tutsplus.com/tutorials/php/why-you-should-be-using-phps-pdo-for-database-access/
 
-        $this->db = new PDO(DB_TYPE . ':dbname=//' . DB_NAME . ';charset=' . DB_CHARSET, DB_USER, DB_PASS, $options);
+        $this->db = new PDO($this->DB_CONFIG[$this->conexion]["DB_TYPE"] . ':dbname=//' . $this->DB_CONFIG[$this->conexion]["DB_NAME"] . ';charset=' . $this->DB_CONFIG[$this->conexion]["DB_CHARSET"], $this->DB_CONFIG[$this->conexion]["DB_USER"], $this->DB_CONFIG[$this->conexion]["DB_PASS"], $options);
     }
 }

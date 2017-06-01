@@ -16,6 +16,24 @@ use Mini\Core\Model;
  * @author ingeniero.analista1
  */
 class InscripcionCurso extends Model {
+    
+    protected $conexion = "con00";
+    
+    private $CONSECUTIVO;
+    private $IDENTIFICACION;
+    private $FECH_INSCRIPCION;
+    private $CODIGO_INSTITUCION;
+    private $FACTURO;
+    private $NRO_RECIBO;
+    private $ESTADO;
+    private $MOTIVO;
+    private $IMPRIMIR;
+    private $COD_PLAN;
+    private $NOTA;
+    private $TIPO;
+    private $CODIGO;
+    private $VINCULO;
+    private $CEDULA_VINCULO;
 
     public function getCONSECUTIVO() {
         return $this->CONSECUTIVO;
@@ -147,9 +165,9 @@ class InscripcionCurso extends Model {
 
     public function consultarInscritos() {
         $sql = "select * from "
-                . "con00.TEM_INS_CURSO ins "
+                . "TEM_INS_CURSO ins "
                 . "inner join SCR_ASISTENTES asi "
-                . "on asi.IDENTIFICACION = ins.IDENTIFICACION"
+                . "on asi.IDENTIFICACION = ins.IDENTIFICACION "
                 . "where ins.CONSECUTIVO = :consecutivo";
         
         $query = $this->db->prepare($sql);
